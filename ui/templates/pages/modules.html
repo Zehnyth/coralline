@@ -1,0 +1,6 @@
+{{/* modules: modulesPage. */}}
+{{define "title"}}Modules · Coralline{{end}}
+{{define "content"}}
+<div class="section-heading">{{template "section-title" dict "Title" "All modules" "Count" (printf "%d" .Catalog.Total) "Description" "Every published module, across every namespace you can read."}}</div>
+{{template "module-catalog" .Catalog}}
+{{end}}

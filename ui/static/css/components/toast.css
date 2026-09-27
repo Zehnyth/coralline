@@ -1,0 +1,29 @@
+/* toast — the shell's status message. It is always in the DOM (a live
+   region must be rendered to be announced); .is-visible shows it. */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 50;
+  max-width: min(90vw, 480px);
+  padding: 12px 22px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity .2s, transform .2s var(--ease);
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.toast:empty {
+  padding: 0;
+  border: 0;
+}

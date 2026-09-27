@@ -1,0 +1,19 @@
+{{/* token_created: tokenCreatedPage. The secret is shown exactly once;
+     every later visit explains that instead of showing it. */}}
+{{define "title"}}Token created · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Tokens" "/tokens" .Token.Name (printf "/tokens/%s" .Token.ID) "Created" "")}}
+{{if .Plaintext}}
+<section class="panel secret-reveal" aria-labelledby="created-title">
+  <div class="panel-heading"><div><h1 id="created-title">{{.Token.Name}} is ready</h1><p>Copy this token now. It is shown once and can't be recovered — if it's lost, revoke it and create a new one.</p></div></div>
+  {{template "code-block" dict "Title" "token" "ID" "token-plaintext" "Code" .Plaintext "CopyLabel" "Copy token" "CopyMessage" "Token copied to clipboard"}}
+  <div class="form-actions"><a class="button primary" href="/tokens/{{.Token.ID}}">View token</a><a class="button secondary" href="/tokens">Back to tokens</a></div>
+</section>
+{{else}}
+<section class="panel" aria-labelledby="created-title">
+  <div class="panel-heading"><div><h1 id="created-title">This secret was already shown</h1><p>A new token's secret is displayed only once. If you didn't copy it, revoke <strong>{{.Token.Name}}</strong> and create a new token.</p></div></div>
+  <div class="form-actions"><a class="button primary" href="/tokens/{{.Token.ID}}">Manage {{.Token.Name}}</a><a class="button secondary" href="/tokens/new">Create another token</a></div>
+</section>
+{{end}}
+{{end}}

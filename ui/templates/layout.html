@@ -1,0 +1,21 @@
+{{/* layout: the app shell. Pages fill "title", "styles", and "content". */}}
+{{define "layout"}}<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{template "head" .}}
+  <title>{{block "title" .}}Coralline{{end}}</title>
+  {{block "styles" .}}{{end}}
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  {{template "sidebar" .}}
+  <div class="app-shell" id="app-shell">
+    {{template "topbar" .}}
+    <main id="main" tabindex="-1">{{template "content" .}}</main>
+    <footer class="page-footer"><span>Made by <strong>Zehnyth</strong></span></footer>
+  </div>
+  {{template "guide-dialog" .}}
+  {{template "toast" .}}
+</body>
+</html>
+{{end}}

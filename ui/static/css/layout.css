@@ -1,0 +1,398 @@
+/* layout.css — the application shell: sidebar, topbar, main area, and
+   footer. Components that live in the shell (dialog, toast, buttons) have
+   their own files under components/.
+
+   Sidebar states:
+   - desktop (>700px): a rail that expands into a panel. Expanded is
+     :root[data-sidebar="expanded"], set before first paint from storage.
+   - mobile (<=700px): an off-canvas drawer, open while .sidebar.is-open. */
+@keyframes sidebar-fade-in {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+@keyframes sidebar-indicator-in {
+  from { transform: scaleY(0); opacity: 0 }
+  to { transform: scaleY(1); opacity: 1 }
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-rail);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  transition: width 220ms var(--ease);
+}
+.sidebar-backdrop {
+  display: none;
+}
+.sidebar__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar__toggle {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  color: var(--muted);
+  outline-offset: -2px;
+  transition: background 150ms ease, color 150ms ease;
+}
+.sidebar__toggle:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.sidebar__toggle .icon {
+  width: 17px;
+  height: 17px;
+  transition: transform 220ms var(--ease);
+}
+.sidebar__nav {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  outline-offset: -2px;
+  transition: background 150ms ease, color 150ms ease;
+}
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  opacity: 0;
+  transform: scaleY(0);
+}
+.nav-item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.nav-item[aria-current="page"] {
+  background: var(--surface-accent);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.nav-item[aria-current="page"]::before {
+  opacity: 1;
+  transform: scaleY(1);
+  animation: sidebar-indicator-in 250ms var(--ease) both;
+}
+.nav-item .icon {
+  width: 18px;
+  height: 18px;
+}
+.nav-item__text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar__footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+.sidebar__version {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font: 11px var(--mono);
+  white-space: nowrap;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-left: var(--sidebar-rail);
+  transition: margin-left 220ms var(--ease);
+}
+
+@media (min-width: 701px) {
+  :root[data-sidebar="expanded"] .sidebar {
+    width: var(--sidebar-panel);
+  }
+  :root[data-sidebar="expanded"] .app-shell {
+    margin-left: var(--sidebar-panel);
+  }
+  /* The collapsed rail: icons only, labels as tooltips. */
+  :root:not([data-sidebar="expanded"]) .sidebar__header {
+    justify-content: center;
+    padding: 8px 0;
+  }
+  :root:not([data-sidebar="expanded"]) .sidebar__toggle .icon {
+    transform: rotate(180deg);
+  }
+  :root:not([data-sidebar="expanded"]) .sidebar__nav {
+    padding: 10px 0;
+  }
+  :root:not([data-sidebar="expanded"]) .nav-item {
+    justify-content: center;
+    gap: 0;
+    padding: 11px 0;
+    border-radius: 0;
+  }
+  :root:not([data-sidebar="expanded"]) .nav-item__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  :root:not([data-sidebar="expanded"]) .sidebar__footer {
+    padding: 12px 4px;
+  }
+  :root:not([data-sidebar="expanded"]) .sidebar__version {
+    max-width: 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 2px 3px;
+  }
+}
+
+.mobile-menu-toggle {
+  display: none;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.topbar-crumb, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.topbar-crumb {
+  flex: 1 1 auto;
+}
+.topbar-right {
+  flex: 0 0 auto;
+}
+.topbar-crumb__text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+}
+.topbar-crumb__text > span:last-child {
+  color: var(--muted);
+}
+.registry-dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border-accent);
+  border-radius: 3px;
+}
+.slash {
+  margin: 0 4px;
+  color: var(--border-strong);
+}
+.theme-toggle .icon-moon {
+  display: none;
+}
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .theme-toggle .icon-sun {
+    display: none;
+  }
+  :root:not([data-theme]) .theme-toggle .icon-moon {
+    display: block;
+  }
+}
+.connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-2);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.connection .status-dot {
+  margin: 0;
+  background: var(--muted);
+}
+.connection[data-state="ready"] .status-dot {
+  background: var(--live);
+}
+.connection[data-state="error"] {
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+}
+.connection[data-state="error"] .status-dot {
+  background: var(--warning);
+}
+.topbar-session {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.topbar-session form {
+  margin: 0;
+}
+.topbar-user {
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+}
+.topbar-user strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.topbar-link {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  color: var(--text-2);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.topbar-link:hover {
+  border-color: var(--border-accent);
+  color: var(--text);
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1560px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 32px 40px 40px;
+}
+main:focus {
+  outline: none;
+}
+.page-footer {
+  display: flex;
+  justify-content: center;
+  margin: 0 40px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 1180px) {
+  main {
+    padding: 28px;
+  }
+  .topbar {
+    padding: 0 28px;
+  }
+  .page-footer {
+    margin: 0 28px;
+  }
+}
+@media (max-width: 700px) {
+  .sidebar {
+    width: var(--sidebar-panel);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 220ms var(--ease), visibility 0s linear 220ms;
+  }
+  .sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 220ms var(--ease);
+  }
+  .sidebar-backdrop:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    background: light-dark(rgba(28, 23, 38, .35), rgba(5, 4, 10, .6));
+    animation: sidebar-fade-in 180ms ease both;
+  }
+  .app-shell {
+    margin-left: 0;
+  }
+  .mobile-menu-toggle {
+    display: inline-grid;
+  }
+  .topbar {
+    gap: 8px;
+    min-height: 56px;
+    padding: 0 16px;
+  }
+  .topbar-crumb, .topbar-right {
+    gap: 8px;
+  }
+  /* The health pill collapses to its dot; the label stays for screen readers. */
+  .connection {
+    padding: 8px;
+  }
+  .connection__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .topbar-user {
+    display: none;
+  }
+  main {
+    padding: 20px 16px 32px;
+  }
+  .page-footer {
+    margin: 0 16px;
+  }
+}

@@ -1,0 +1,39 @@
+/* breadcrumbs — separators are drawn with CSS, so screen readers never
+   announce them. */
+.breadcrumbs {
+  margin: 0 0 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.breadcrumbs li + li::before {
+  content: "";
+  width: 1px;
+  height: 12px;
+  background: currentColor;
+  opacity: .6;
+  transform: rotate(20deg);
+}
+.breadcrumbs a:hover {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.breadcrumbs [aria-current] {
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}

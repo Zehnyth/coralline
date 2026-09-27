@@ -1,0 +1,51 @@
+{{/* token_new: tokenFormPage. The submission key makes a double click or a
+     resubmitted form land on the first result instead of minting again. */}}
+{{define "title"}}New token · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Tokens" "/tokens" "New token" "")}}
+<div class="section-heading">{{template "section-title" dict "Title" "New token" "Description" "Standard tokens can read or publish modules in the namespaces you grant. Admin tokens are created from the CLI on the registry host."}}</div>
+{{template "alerts" dict "Error" .Error}}
+<form class="panel" method="post" action="/tokens" data-component="token-form submit-once">
+  <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+  <input type="hidden" name="_submission" value="{{.Form.Submission}}">
+  <div class="form-grid">
+    <div class="field">
+      <label for="token-name">Name</label>
+      <input class="input" id="token-name" name="name" value="{{.Form.Name}}" required maxlength="64" autocomplete="off" placeholder="ci-publisher" aria-describedby="token-name-hint">
+      <span class="field-hint" id="token-name-hint">Who or what will use it. Shown in audit logs.</span>
+    </div>
+    <div class="field">
+      <label for="token-namespace">Namespace</label>
+      <select id="token-namespace" name="namespace" required>
+        <option value="*"{{if eq .Form.Namespace "*"}} selected{{end}}>All namespaces</option>
+        {{range .Namespaces}}<option value="{{.}}"{{if eq . $.Form.Namespace}} selected{{end}}>{{.}}</option>{{end}}
+      </select>
+    </div>
+    <fieldset class="field field--wide">
+      <legend>Access</legend>
+      <div class="choice-row">
+        {{range .Roles}}<label class="choice"><input type="radio" name="role" value="{{.Value}}" data-part="role"{{if eq .Value $.Form.Role}} checked{{end}}><span><strong>{{.Label}}</strong> <span class="muted">{{.Description}}</span></span></label>{{end}}
+      </div>
+    </fieldset>
+    <fieldset class="field field--wide" data-part="custom-permissions" aria-describedby="custom-permissions-hint">
+      <legend>Custom permissions</legend>
+      <div class="choice-row">
+        {{range .PermissionOptions}}<label class="choice"><input type="checkbox" name="permission" value="{{.Value}}"{{if .Checked}} checked{{end}}><code>{{.Value}}</code></label>{{end}}
+      </div>
+      <span class="field-hint" id="custom-permissions-hint">Used only when Access is set to Custom.</span>
+    </fieldset>
+    <div class="field field--wide">
+      <label for="token-tags">Tags</label>
+      <textarea class="textarea" id="token-tags" name="tags" placeholder="owner=alice&#10;team=platform" aria-describedby="token-tags-hint">{{.Form.TagsText}}</textarea>
+      <span class="field-hint" id="token-tags-hint">One key=value per line. Labels only — tags never grant access.</span>
+    </div>
+    <div class="field">
+      <label for="token-expiry">Expires after (hours)</label>
+      <input class="input" id="token-expiry" name="expires_in_hours" type="number" min="0" max="{{.MaxExpiryHours}}" step="1" inputmode="numeric" value="{{.Form.ExpiresInHours}}" aria-describedby="token-expiry-hint">
+      <span class="field-hint" id="token-expiry-hint">0 means the token never expires.</span>
+    </div>
+  </div>
+  <div class="form-actions"><button class="button primary" type="submit">{{icon "key"}} Create token</button><a class="button secondary" href="/tokens">Cancel</a></div>
+</form>
+{{end}}

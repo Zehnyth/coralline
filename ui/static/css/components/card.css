@@ -1,0 +1,105 @@
+/* card — catalog grids and the module-card / namespace-card components. */
+.card-grid {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card-grid--modules {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.card-grid--namespaces {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.card-item {
+  display: flex;
+  min-width: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 20px 20px 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: transform .18s, border-color .18s, background .18s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-accent);
+  background: var(--surface-hover);
+  box-shadow: var(--shadow);
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 20px;
+}
+.card-subtitle {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.module-address {
+  display: block;
+  margin: 8px 0 24px;
+  color: var(--muted);
+  font: 12px var(--mono);
+  overflow-wrap: anywhere;
+}
+.provider-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 26px;
+  margin: 16px 0 20px;
+}
+.empty-provider {
+  color: var(--muted);
+  font-size: 12px;
+}
+.card-arrow {
+  color: var(--muted);
+  font-size: 18px;
+}
+.card:hover .card-arrow {
+  color: var(--accent);
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding: 13px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+.card-footer > span:last-child {
+  color: var(--accent);
+}
+
+@media (max-width: 960px) {
+  .card-grid--namespaces {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .card-grid--modules, .card-grid--namespaces {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card {
+    padding: 18px 18px 0;
+  }
+}

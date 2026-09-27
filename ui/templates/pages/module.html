@@ -1,0 +1,36 @@
+{{/* module: modulePage. */}}
+{{define "title"}}{{.Namespace}}/{{.Name}} · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/module.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Namespaces" "/namespaces" .Namespace (printf "/n/%s" .Namespace) .Name "")}}
+<div class="page-heading">
+  {{template "heading-identity" dict "Icon" "cube" "Eyebrow" (printf "%s / %s" .Namespace (provider .System)) "Title" .Name "Subtitle" "Reusable infrastructure, ready for your next project."}}
+  {{template "provider-tag" .System}}
+</div>
+<nav class="page-nav" aria-label="On this page"><a href="#usage">Usage</a><a href="#versions">Versions <span class="count">{{len .Versions}}</span></a></nav>
+<div class="detail-grid">
+  <div class="stack">
+    <section class="panel" id="usage" aria-labelledby="usage-title">
+      <div class="panel-heading"><div><h2 id="usage-title">Use this module</h2><p>Add this block to your Terraform or OpenTofu configuration.</p></div></div>
+      <form class="version-form" method="get" action="#usage">
+        <label for="version">Module version</label>
+        <div class="version-form__controls"><select id="version" name="version">{{range .Versions}}<option value="{{.}}"{{if eq . $.SelectedVersion}} selected{{end}}>{{.}}{{if eq . $.LatestVersion}} · {{if $.LatestIsStable}}Recommended{{else}}Latest{{end}}{{end}}</option>{{end}}</select><button class="button secondary small" type="submit">Use version</button></div>
+      </form>
+      {{template "code-block" dict "Title" "main.tf" "ID" "usage-code" "Code" .Snippet "CopyLabel" "Copy configuration" "CopyMessage" "Configuration copied to clipboard"}}
+      <p class="usage-note">Then run <code>terraform init</code> or <code>tofu init</code> to download the module. When the registry requires sign-in, configure a read token for <code>{{.Host}}</code>.</p>
+    </section>
+    <section class="panel" id="versions" aria-labelledby="versions-title">
+      <div class="panel-heading"><div><h2 id="versions-title">Published versions <span class="count">{{len .Versions}}</span></h2><p>Immutable releases, ready to pin in your configuration.</p></div></div>
+      <ul class="version-list" role="list">{{range .Versions}}<li><a class="version-row{{if eq . $.SelectedVersion}} version-selected{{end}}" href="?version={{.}}#usage"{{if eq . $.SelectedVersion}} aria-current="true"{{end}}><span class="version-number"><span class="version-dot" aria-hidden="true"></span>{{.}}</span><span class="version-meta">{{if eq . $.LatestVersion}}<span class="badge badge--success">{{if $.LatestIsStable}}Recommended{{else}}Latest{{end}}</span>{{end}}{{if eq . $.SelectedVersion}}<span class="badge badge--accent">Selected</span>{{else}}<span class="version-action">Use version <span aria-hidden="true">→</span></span>{{end}}</span></a></li>{{end}}</ul>
+    </section>
+  </div>
+  <aside class="stack module-sidebar" aria-labelledby="details-title">
+    <section class="panel">
+      <h2 class="eyebrow" id="details-title">Module details</h2>
+      <dl class="meta-list meta-list--stacked"><dt>Namespace</dt><dd><a class="text-link" href="/n/{{.Namespace}}">{{.Namespace}}</a></dd><dt>Provider</dt><dd>{{provider .System}}</dd><dt>Selected version</dt><dd class="mono">{{.SelectedVersion}}</dd>{{if .Publisher}}<dt>Published by</dt><dd>{{.Publisher}}</dd>{{end}}<dt>Source</dt><dd class="mono source-text" id="source-address">{{.Source}}</dd></dl>
+      {{template "copy-button" dict "Target" "source-address" "Label" "Copy source" "Message" "Module source copied to clipboard"}}
+    </section>
+    <div class="detail-note"><span class="detail-note__icon" aria-hidden="true">{{icon "shield"}}</span><h3>Pin with confidence.</h3><p>Published versions are immutable. The same version always points to the same module archive.</p></div>
+  </aside>
+</div>
+{{end}}

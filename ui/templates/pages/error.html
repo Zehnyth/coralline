@@ -1,0 +1,13 @@
+{{/* error: errorPage. Rendered inside the app shell for 404s and failures;
+     it never says why something is missing. */}}
+{{define "title"}}{{.Heading}} · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/error.css"}}">{{end}}
+{{define "content"}}
+<section class="error-state" aria-labelledby="error-title">
+  <span class="eyebrow">Error {{.Status}}</span>
+  <h1 id="error-title">{{.Heading}}</h1>
+  <p>{{.Message}}</p>
+  {{if ge .Status 500}}{{with .CorrelationID}}<p class="error-state__ref">Reference: <code>{{.}}</code></p>{{end}}{{end}}
+  <div class="form-actions"><a class="button primary" href="/">Go to home</a><a class="button secondary" href="/modules">Browse modules</a></div>
+</section>
+{{end}}

@@ -1,0 +1,80 @@
+/* namespaces.css — the "/namespaces" overview stat strip. The namespace
+   grid itself is the shared card/catalog components. */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 32px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+.stat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px 22px;
+}
+.stat + .stat {
+  border-left: 1px solid var(--border);
+}
+.stat-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.stat-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.stat strong {
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.stat-description {
+  align-self: flex-end;
+  margin-left: auto;
+  padding-bottom: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .stat {
+    gap: 10px;
+    padding: 16px;
+  }
+  .stat-description {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .stats {
+    margin-bottom: 24px;
+  }
+  .stat {
+    padding: 12px 10px;
+  }
+  .stat-icon {
+    display: none;
+  }
+  .stat-label {
+    font-size: 11px;
+  }
+  .stat strong {
+    font-size: 23px;
+  }
+}

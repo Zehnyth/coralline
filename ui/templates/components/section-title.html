@@ -1,0 +1,3 @@
+{{/* section-title: dict Title, Count (string, optional), Description
+     (optional). The page's h1 on list-style pages. */}}
+{{define "section-title"}}<div class="section-title"><div class="heading-with-count"><h1>{{.Title}}</h1>{{with .Count}}<span class="count">{{.}}</span>{{end}}</div>{{with .Description}}<p>{{.}}</p>{{end}}</div>{{end}}

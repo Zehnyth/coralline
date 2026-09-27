@@ -1,0 +1,13 @@
+{{/* home: homePage. */}}
+{{define "title"}}Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/home.css"}}">{{end}}
+{{define "content"}}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="tiny-diamond" aria-hidden="true">◆</span> Your infrastructure, connected</span>
+    <h1 id="hero-title">A home for your<br><span>building blocks.</span></h1>
+    <p>Discover, share, and version the modules that power your infrastructure. All in one place. All yours.</p>
+    <button class="button primary" type="button" data-component="guide-trigger">{{icon "cube"}} Publish a module</button>
+  </div>
+</section>
+{{end}}

@@ -1,0 +1,5 @@
+{{/* empty-state: dict Icon (optional), Title, Body (optional), and an
+     optional action: Action (its label) with either Guide=true (opens the
+     getting-started guide) or Href (plus Secondary=true for a secondary
+     button). */}}
+{{define "empty-state"}}<div class="empty-state">{{with .Icon}}<span class="empty-state__icon" aria-hidden="true">{{icon .}}</span>{{end}}<h2 class="empty-state__title">{{.Title}}</h2>{{with .Body}}<p>{{.}}</p>{{end}}{{if .Action}}{{if .Guide}}<button type="button" class="button primary" data-component="guide-trigger">{{.Action}}</button>{{else}}<a class="button {{if .Secondary}}secondary{{else}}primary{{end}}" href="{{.Href}}">{{.Action}}</a>{{end}}{{end}}</div>{{end}}

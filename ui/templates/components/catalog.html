@@ -1,0 +1,20 @@
+{{/* catalog: client-side search, sort, and filter around a grid of cards
+     (static/js/components/catalog.js). A catalog root is
+
+       <section class="catalog" data-component="catalog"
+                data-singular="…" data-plural="…">
+
+     containing catalog-toolbar, a list marked data-part="items" whose
+     children carry data-item, data-name (sort key), data-search (search
+     text) and optionally data-provider, then catalog-status. Both helpers
+     take catalogProps, or a struct embedding it. The count becomes a live
+     region only after the script has restored any filter from the URL, so
+     the initial render isn't announced. */}}
+{{define "catalog-toolbar"}}<div class="toolbar" role="search" aria-label="Filter {{.Plural}}">
+  <label class="search">{{icon "search"}}<span class="visually-hidden">Search {{.Plural}}</span><input type="search" data-part="search" placeholder="{{.Placeholder}}" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></label>
+  {{if .Providers}}<label class="select-control"><span class="visually-hidden">Filter by provider</span><select data-part="provider"><option value="">All providers</option>{{range .Providers}}<option value="{{.}}">{{provider .}}</option>{{end}}</select></label>{{end}}
+  <label class="select-control"><span class="select-control__label">Sort</span><select data-part="sort"><option value="asc">Name: A–Z</option><option value="desc">Name: Z–A</option></select></label>
+</div>{{end}}
+
+{{define "catalog-status"}}<div class="empty-state" data-part="no-results" hidden><h2 class="empty-state__title">No matching {{.Plural}}</h2><p>Try another search{{if .Providers}} or choose a different provider{{end}}.</p><button class="button secondary" data-part="reset" type="button">Reset filters</button></div>
+<p class="results-line" data-part="count">{{plural .Total .Singular .Plural}}</p>{{end}}

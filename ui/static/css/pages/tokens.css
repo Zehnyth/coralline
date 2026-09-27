@@ -1,0 +1,96 @@
+/* tokens.css — the admin-only Tokens section: list, create, reveal, and
+   detail pages. */
+.token-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.token-filter .search {
+  max-width: 460px;
+}
+.token-name {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+a.token-name:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.token-id {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font: 11px var(--mono);
+  font-weight: 400;
+}
+.grant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-2);
+  font: 12px var(--mono);
+}
+.grant-list .grant-ns {
+  color: var(--muted);
+}
+.cell-muted {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.token-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 24px;
+}
+.token-detail-grid > * {
+  min-width: 0;
+}
+.grant-matrix td, .grant-matrix th {
+  text-align: center;
+}
+.grant-matrix tbody th, .grant-matrix thead th:first-child {
+  text-align: left;
+}
+.grant-matrix input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.secret-reveal {
+  border-color: var(--border-accent);
+}
+.secret-reveal .code-block pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.secret-reveal .code-block {
+  margin-bottom: 20px;
+}
+.danger-zone {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
+}
+.danger-zone h2 {
+  color: var(--danger);
+}
+
+@media (max-width: 960px) {
+  .token-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .token-filter .search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+}

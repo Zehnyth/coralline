@@ -1,0 +1,40 @@
+{{/* tokens: tokensPage. */}}
+{{define "title"}}Tokens · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+<div class="section-heading">
+  {{template "section-title" dict "Title" "Tokens" "Count" (printf "%d" (len .Tokens)) "Description" "Every credential that can reach this registry. Only admins can see this page."}}
+  <a class="button primary" href="/tokens/new">{{icon "plus"}} New token</a>
+</div>
+{{template "alerts" dict "Notice" .Notice "Error" .Error}}
+<form class="token-filter" method="get" action="/tokens" role="search" aria-label="Filter tokens">
+  <label class="search">{{icon "search"}}<span class="visually-hidden">Filter tokens by tag</span><input type="search" name="tag" value="{{.TagFilter}}" placeholder="Filter by tag, e.g. owner=alice" autocomplete="off" spellcheck="false"></label>
+  <button class="button secondary small" type="submit">Filter</button>
+  {{if .TagFilter}}<a class="text-button" href="/tokens">Clear filter</a>{{end}}
+</form>
+{{if .Tokens}}
+<div class="data-table-wrap" role="region" aria-label="Tokens" tabindex="0">
+  <table class="data-table">
+    <thead><tr><th scope="col">Token</th><th scope="col">Status</th><th scope="col">Kind</th><th scope="col">Grants</th><th scope="col">Tags</th><th scope="col">Created by</th><th scope="col">Last used</th><th scope="col">Expires</th></tr></thead>
+    <tbody>
+    {{range .Tokens}}
+      <tr>
+        <th scope="row"><a class="token-name" href="/tokens/{{.ID}}">{{.Name}}</a><span class="token-id">{{.ID}}</span></th>
+        <td>{{template "token-status" .}}</td>
+        <td>{{template "token-kind" .}}</td>
+        <td>{{template "grant-list" .}}</td>
+        <td>{{template "tag-chips" .Tags}}</td>
+        <td class="cell-muted">{{.CreatedBy}}</td>
+        <td class="cell-muted">{{.LastUsed}}</td>
+        <td class="cell-muted">{{.Expires}}</td>
+      </tr>
+    {{end}}
+    </tbody>
+  </table>
+</div>
+{{else if .TagFilter}}
+{{template "empty-state" dict "Icon" "key" "Title" (printf "No tokens match %s." .TagFilter) "Body" "Check the key and value, or clear the filter." "Action" "Clear filter" "Href" "/tokens" "Secondary" true}}
+{{else}}
+{{template "empty-state" dict "Icon" "key" "Title" "No tokens yet." "Body" "Mint a scoped token for a person or a CI pipeline." "Action" "New token" "Href" "/tokens/new"}}
+{{end}}
+{{end}}

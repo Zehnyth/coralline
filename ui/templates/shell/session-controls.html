@@ -1,0 +1,3 @@
+{{/* session-controls: basePage. Token names are only ever shown to admins; a
+     standard viewer sees "Signed in" without learning their own token's name. */}}
+{{define "session-controls"}}{{with .Viewer}}<div class="topbar-session">{{if .Authenticated}}<span class="topbar-user">{{if .Admin}}Signed in as <strong>{{.Name}}</strong>{{else}}Signed in{{end}}</span><form method="post" action="/logout"><input type="hidden" name="_csrf" value="{{.CSRF}}"><button type="submit" class="topbar-link">Sign out</button></form>{{else if .LoginAvailable}}<a class="topbar-link" href="/login">Sign in</a>{{end}}</div>{{end}}{{end}}

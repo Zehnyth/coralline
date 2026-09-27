@@ -1,0 +1,10 @@
+{{/* namespace: namespacePage. */}}
+{{define "title"}}{{.Namespace}} · Coralline{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Namespaces" "/namespaces" .Namespace "")}}
+<div class="page-heading">
+  {{template "heading-identity" dict "Initial" (initial .Namespace) "Tone" (tone .Namespace) "Eyebrow" "Namespace" "Title" .Namespace "Subtitle" (plural .Catalog.Total "module" "modules")}}
+  <button class="button secondary" type="button" data-component="guide-trigger">{{icon "cube"}} How to publish</button>
+</div>
+{{template "module-catalog" .Catalog}}
+{{end}}

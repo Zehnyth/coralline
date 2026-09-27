@@ -1,0 +1,60 @@
+/* panel — .panel with .panel-heading, .callout, and .meta-list (a
+   definition list; --stacked puts each value under its label). */
+.panel {
+  min-width: 0;
+  padding: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.panel-heading h1, .panel-heading h2 {
+  font-size: 19px;
+}
+.panel-heading p {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.callout {
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--accent-soft);
+  color: var(--text-2);
+  font-size: 13px;
+}
+.meta-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 18px;
+  margin: 0;
+  font-size: 13px;
+}
+.meta-list dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.meta-list dd {
+  margin: 0;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+.meta-list--stacked {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3px;
+}
+.meta-list--stacked dt:not(:first-child) {
+  margin-top: 14px;
+}
+
+@media (max-width: 700px) {
+  .panel {
+    padding: 20px;
+  }
+}

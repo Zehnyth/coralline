@@ -1,0 +1,24 @@
+{{/* sidebar: primary navigation (basePage). On desktop it is a rail that
+     expands into a panel (remembered per browser); at 700px and below it is
+     an off-canvas drawer opened by the topbar's sidebar-trigger. The Tokens
+     entry renders only for admin viewers — standard and anonymous viewers
+     must not learn the section exists. */}}
+{{define "sidebar"}}<div class="sidebar-root" data-component="sidebar" data-content="app-shell">
+  <div class="sidebar-backdrop" data-part="backdrop" hidden></div>
+  <aside class="sidebar" id="sidebar" data-part="panel" aria-label="Registry navigation">
+    <div class="sidebar__header">
+      <button class="sidebar__toggle" type="button" data-part="toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Expand sidebar">{{icon "collapse"}}</button>
+    </div>
+    <nav class="sidebar__nav">
+      {{template "sidebar-link" dict "Href" "/" "Label" "Home" "Icon" "home" "Current" (eq .Nav "home")}}
+      {{template "sidebar-link" dict "Href" "/namespaces" "Label" "Namespaces" "Icon" "grid" "Current" (eq .Nav "namespaces")}}
+      {{template "sidebar-link" dict "Href" "/modules" "Label" "Modules" "Icon" "cube" "Current" (eq .Nav "modules")}}
+      {{if .Viewer.Admin}}{{template "sidebar-link" dict "Href" "/tokens" "Label" "Tokens" "Icon" "key" "Current" (eq .Nav "tokens")}}{{end}}
+    </nav>
+    <div class="sidebar__footer" title="Coralline {{version}}"><span class="sidebar__version">{{version}}</span></div>
+  </aside>
+</div>{{end}}
+
+{{/* sidebar-link: dict Href, Label, Icon, Current. The title is the tooltip
+     in the collapsed rail; the label stays the accessible name. */}}
+{{define "sidebar-link"}}<a href="{{.Href}}" class="nav-item"{{if .Current}} aria-current="page"{{end}} title="{{.Label}}">{{icon .Icon}}<span class="nav-item__text">{{.Label}}</span></a>{{end}}

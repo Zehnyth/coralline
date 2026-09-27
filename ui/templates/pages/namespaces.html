@@ -1,0 +1,16 @@
+{{/* namespaces: namespacesPage. */}}
+{{define "title"}}Namespaces · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/namespaces.css"}}">{{end}}
+{{define "content"}}
+<div class="section-heading">{{template "section-title" dict "Title" "Namespaces" "Count" (printf "%d" (len .Namespaces)) "Description" "Browse modules by the team or project that owns them."}}</div>
+<section class="stats" aria-label="Registry overview">
+  <div class="stat"><span class="stat-icon" aria-hidden="true">{{icon "grid"}}</span><div><span class="stat-label">Namespaces</span><strong>{{len .Namespaces}}</strong></div><span class="stat-description">Organized by team</span></div>
+  <div class="stat"><span class="stat-icon" aria-hidden="true">{{icon "cube"}}</span><div><span class="stat-label">Published modules</span><strong>{{.ModuleCount}}</strong></div><span class="stat-description">Ready to use</span></div>
+  <div class="stat"><span class="stat-icon" aria-hidden="true">{{icon "layers"}}</span><div><span class="stat-label">Target providers</span><strong>{{.ProviderCount}}</strong></div><span class="stat-description">Across your modules</span></div>
+</section>
+<section class="catalog" data-component="catalog" data-singular="{{.Catalog.Singular}}" data-plural="{{.Catalog.Plural}}" aria-label="Namespaces">
+  {{if .Namespaces}}{{template "catalog-toolbar" .Catalog}}
+  <ul class="card-grid card-grid--namespaces" data-part="items" role="list">{{range .Namespaces}}{{template "namespace-card" .}}{{end}}</ul>
+  {{template "catalog-status" .Catalog}}{{else}}{{template "empty-state" dict "Icon" "grid" "Title" "Your registry starts here." "Body" "Create a namespace, then publish your first module." "Action" "Get started" "Guide" true}}{{end}}
+</section>
+{{end}}

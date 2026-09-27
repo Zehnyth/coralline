@@ -1,0 +1,7 @@
+{{/* module-catalog: moduleCatalog. The searchable module grid shared by
+     /modules and /n/{ns}; shows its empty state when there are no modules. */}}
+{{define "module-catalog"}}<section class="catalog" data-component="catalog" data-singular="{{.Singular}}" data-plural="{{.Plural}}" aria-label="Modules">
+  {{if .Modules}}{{template "catalog-toolbar" .}}
+  <ul class="card-grid card-grid--modules" data-part="items" role="list">{{range .Modules}}{{template "module-card" dict "Module" . "SearchNamespace" $.SearchNamespace}}{{end}}</ul>
+  {{template "catalog-status" .}}{{else}}{{template "empty-state" dict "Icon" "cube" "Title" .EmptyTitle "Body" .EmptyBody "Action" "Publish a module" "Guide" true}}{{end}}
+</section>{{end}}

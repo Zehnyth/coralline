@@ -1,0 +1,88 @@
+/* catalog — the search/sort/filter toolbar and result count around a card
+   grid (static/js/components/catalog.js). .search is also used by the
+   Tokens tag filter. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.search {
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.search:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 1px var(--focus);
+}
+.search .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+}
+.search input:focus-visible {
+  outline: none;
+}
+.search input::placeholder {
+  color: var(--muted);
+}
+.search kbd {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+/* No hardware keyboard, no shortcut hint. */
+@media (hover: none) {
+  .search kbd {
+    display: none;
+  }
+}
+.select-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.results-line {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .toolbar .search {
+    flex-basis: 100%;
+  }
+  .toolbar .select-control {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .toolbar .select-control select {
+    flex: 1;
+    min-width: 0;
+  }
+}

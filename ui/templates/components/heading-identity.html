@@ -1,0 +1,4 @@
+{{/* heading-identity: dict Eyebrow, Title, Subtitle (optional),
+     SubtitleMono (optional bool), and either Icon (an icon name) or
+     Initial + Tone (a namespace avatar). The page's h1 on detail pages. */}}
+{{define "heading-identity"}}<div class="heading-identity">{{if .Icon}}<span class="module-symbol large" aria-hidden="true">{{icon .Icon}}</span>{{else}}<span class="namespace-avatar large tone-{{.Tone}}" aria-hidden="true">{{.Initial}}</span>{{end}}<div><span class="eyebrow">{{.Eyebrow}}</span><h1>{{.Title}}</h1>{{with .Subtitle}}<p{{if $.SubtitleMono}} class="mono"{{end}}>{{.}}</p>{{end}}</div></div>{{end}}

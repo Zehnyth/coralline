@@ -1,0 +1,3 @@
+{{/* breadcrumbs: []crumb from the crumbs func; the entry with no Href is the
+     current page. Separators are drawn in CSS so they are never read out. */}}
+{{define "breadcrumbs"}}<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>{{range .}}<li>{{if .Href}}<a href="{{.Href}}">{{.Label}}</a>{{else}}<span aria-current="page">{{.Label}}</span>{{end}}</li>{{end}}</ol></nav>{{end}}

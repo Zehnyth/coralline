@@ -1,0 +1,2 @@
+{{/* tag-chips: []domain.Tag. Only ever rendered inside admin-gated pages. */}}
+{{define "tag-chips"}}{{if .}}<ul class="chip-list" role="list">{{range .}}<li class="chip"><b>{{.Key}}</b>={{.Value}}</li>{{end}}</ul>{{else}}<span class="cell-muted">None</span>{{end}}{{end}}

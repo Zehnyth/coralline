@@ -1,0 +1,4 @@
+{{/* copy-button: dict Target (id of the element whose text is copied),
+     Label, Message (toast text), Inline (bool: the compact style used in
+     code blocks; otherwise a full-width secondary button). */}}
+{{define "copy-button"}}<button type="button" class="{{if .Inline}}copy-button{{else}}button secondary full-width{{end}}" data-component="copy-button" data-target="{{.Target}}" data-message="{{.Message}}">{{icon "copy"}} {{.Label}}</button>{{end}}

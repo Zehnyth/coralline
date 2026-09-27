@@ -1,0 +1,67 @@
+{{/* token_detail: tokenDetailPage. */}}
+{{define "title"}}{{.Token.Name}} · Tokens · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Tokens" "/tokens" .Token.Name "")}}
+<div class="page-heading">
+  {{template "heading-identity" dict "Icon" "key" "Eyebrow" "Token" "Title" .Token.Name "Subtitle" .Token.ID "SubtitleMono" true}}
+  <div class="chip-list">{{template "token-status" .Token}}{{template "token-kind" .Token}}</div>
+</div>
+{{template "alerts" dict "Notice" .Notice "Error" .Error}}
+<div class="token-detail-grid">
+  <div class="stack">
+    <section class="panel" aria-labelledby="grants-title">
+      <div class="panel-heading"><div><h2 id="grants-title">Grants</h2><p>{{if .Token.IsAdmin}}Admin tokens hold every permission by kind and cannot be narrowed.{{else if .GrantsEditable}}What this token may do, per namespace. Changes apply to its next request.{{else if eq .Token.Status "expired"}}This token has expired, so its grants can't be changed.{{else}}This token has been revoked, so its grants can't be changed.{{end}}</p></div></div>
+      {{if .GrantsEditable}}
+      <form method="post" action="/tokens/{{.Token.ID}}/grants" data-component="submit-once">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        <div class="data-table-wrap" role="region" aria-labelledby="grants-title" tabindex="0">
+          <table class="data-table grant-matrix">
+            <thead><tr><th scope="col">Namespace</th>{{range .Matrix.Columns}}<th scope="col"><code>{{.}}</code></th>{{end}}</tr></thead>
+            <tbody>
+            {{range $row := .Matrix.Rows}}
+              <tr><th scope="row">{{$row.Label}}</th>{{range $row.Cells}}<td><input type="checkbox" name="grant" value="{{.Value}}" aria-label="{{.Permission}} on {{$row.Label}}"{{if .Checked}} checked{{end}}></td>{{end}}</tr>
+            {{end}}
+            </tbody>
+          </table>
+        </div>
+        <div class="form-actions"><button class="button primary small" type="submit">Save grants</button></div>
+      </form>
+      {{else}}{{template "grant-list" .Token}}{{end}}
+    </section>
+    <section class="panel" aria-labelledby="tags-title">
+      <div class="panel-heading"><div><h2 id="tags-title">Tags</h2><p>Labels for ownership and offboarding. Tags never grant access.</p></div></div>
+      {{if .TagsEditable}}
+      <form method="post" action="/tokens/{{.Token.ID}}/tags" data-component="submit-once">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        <div class="field"><label for="token-tags">One key=value per line</label><textarea class="textarea" id="token-tags" name="tags" placeholder="owner=alice&#10;team=platform">{{.TagsText}}</textarea></div>
+        <div class="form-actions"><button class="button primary small" type="submit">Save tags</button></div>
+      </form>
+      {{else}}{{template "tag-chips" .Token.Tags}}{{end}}
+    </section>
+  </div>
+  <aside class="stack" aria-label="Token details">
+    <section class="panel" aria-labelledby="details-title">
+      <div class="panel-heading"><div><h2 id="details-title">Details</h2></div></div>
+      <dl class="meta-list">
+        <dt>Created</dt><dd>{{.Token.CreatedAt}}</dd>
+        <dt>Created by</dt><dd>{{.Token.CreatedBy}}</dd>
+        <dt>Last used</dt><dd>{{.Token.LastUsed}}</dd>
+        <dt>Expires</dt><dd>{{.Token.Expires}}</dd>
+        {{if .Token.RevokedAt}}<dt>Revoked</dt><dd>{{.Token.RevokedAt}}</dd>{{end}}
+      </dl>
+    </section>
+    {{if .Revocable}}
+    <section class="panel danger-zone" aria-labelledby="revoke-title">
+      <div class="panel-heading"><div><h2 id="revoke-title">Revoke token</h2><p>Revocation is immediate and permanent. Sessions signed in with this token end on their next request.</p></div></div>
+      <form method="post" action="/tokens/{{.Token.ID}}/revoke" data-component="confirm-form submit-once" data-confirm="Revoke {{.Token.Name}}? This cannot be undone.">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        <button class="button danger full-width" type="submit">Revoke token</button>
+      </form>
+    </section>
+    {{else if .Token.IsAdmin}}
+    <div class="callout">Admin tokens are managed from the CLI on the registry host: <code>coralline admin rotate</code>.</div>
+    {{end}}
+  </aside>
+</div>
+{{end}}
