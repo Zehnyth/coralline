@@ -1,6 +1,6 @@
 /* empty-state — "nothing here yet" and "no matching results". */
 .empty-state {
-  padding: 44px 24px;
+  padding: 40px 24px;
   border: 1px dashed var(--border-strong);
   border-radius: 12px;
   background: var(--surface-1);
@@ -8,15 +8,15 @@
 }
 .empty-state__icon {
   display: inline-flex;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   color: var(--accent);
 }
 .empty-state__icon .icon {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
 }
 .empty-state__title {
-  font-size: 19px;
+  font-size: 15px;
 }
 .empty-state p {
   margin: 10px auto 22px;

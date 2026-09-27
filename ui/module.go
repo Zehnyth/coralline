@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // Module renders one module's detail page. Unknown modules, unreadable
@@ -14,10 +15,18 @@ func (h *Handlers) Module(w http.ResponseWriter, r *http.Request) {
 		h.NotFound(w, r)
 		return
 	}
-	versions, err := h.Versions.ListActiveVersions(r.Context(), ns, name, system)
+	published, err := h.Modules.ListPublishedVersions(r.Context(), ns)
 	if err != nil {
 		h.serverError(w, r, err)
 		return
+	}
+	publishedAt := map[string]time.Time{}
+	var versions []string
+	for _, pv := range published {
+		if pv.Namespace == ns && pv.Name == name && pv.System == system {
+			versions = append(versions, pv.Version)
+			publishedAt[pv.Version] = pv.PublishedAt
+		}
 	}
 	if len(versions) == 0 {
 		h.NotFound(w, r)
@@ -30,7 +39,7 @@ func (h *Handlers) Module(w http.ResponseWriter, r *http.Request) {
 	if selected == "" {
 		selected = latest
 	}
-	if !contains(versions, selected) {
+	if _, ok := publishedAt[selected]; !ok {
 		h.NotFound(w, r)
 		return
 	}
@@ -42,25 +51,21 @@ func (h *Handlers) Module(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	rows := make([]versionRow, 0, len(versions))
+	for _, ver := range versions {
+		rows = append(rows, versionRow{Version: ver, PublishedAt: publishedAt[ver], Prerelease: isPrerelease(ver)})
+	}
 	source := fmt.Sprintf("%s/%s/%s/%s", r.Host, ns, name, system)
 	h.render(w, r, "module", modulePage{
-		basePage:  h.base(r, navNamespaces, sectionBrowse),
+		basePage:  h.base(r, navNamespaces),
 		Namespace: ns, Name: name, System: system,
-		Versions:        versions,
-		LatestVersion:   latest,
-		LatestIsStable:  stable,
-		SelectedVersion: selected,
-		Source:          source,
-		Snippet:         fmt.Sprintf("module %q {\n  source  = %q\n  version = %q\n}", name, source, selected),
-		Publisher:       publisher,
+		Versions:            rows,
+		LatestVersion:       latest,
+		LatestIsStable:      stable,
+		SelectedVersion:     selected,
+		SelectedPublishedAt: publishedAt[selected],
+		Source:              source,
+		Snippet:             fmt.Sprintf("module %q {\n  source  = %q\n  version = %q\n}", name, source, selected),
+		Publisher:           publisher,
 	})
-}
-
-func contains(list []string, want string) bool {
-	for _, s := range list {
-		if s == want {
-			return true
-		}
-	}
-	return false
 }

@@ -25,7 +25,7 @@ func TestBrowsePreview(t *testing.T) {
 		role = "admin"
 	}
 	repo := previewRepo{}
-	h, err := NewHandlers(repo, repo, repo)
+	h, err := NewHandlers(repo, repo)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,10 +62,6 @@ func TestBrowsePreview(t *testing.T) {
 	})
 	mux.Handle("GET /static/", h.Assets)
 	mux.HandleFunc("GET /", h.NotFound)
-	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"status":"ready"}`))
-	})
 	t.Logf("Synthetic UI preview as %s viewer on %s (sign-in page at /login)", role, addr)
 	t.Fatal(http.ListenAndServe(addr, mux))
 }
@@ -76,50 +72,62 @@ func previewViewer(role string) func(*http.Request) Viewer {
 		return func(*http.Request) Viewer { return Viewer{ReadAll: true, LoginAvailable: true} }
 	case "standard":
 		return func(*http.Request) Viewer {
-			return Viewer{Authenticated: true, CSRF: "preview", Readable: func(ns string) bool { return ns == "acme" }}
+			return Viewer{Authenticated: true, Name: "alice laptop", Role: "Reader", CSRF: "preview", Readable: func(ns string) bool { return ns == "acme" }}
 		}
 	default:
 		return func(*http.Request) Viewer {
-			return Viewer{Authenticated: true, Admin: true, Name: "bootstrap-admin", CSRF: "preview", ReadAll: true}
+			return Viewer{Authenticated: true, Admin: true, Name: "bootstrap-admin", Role: "Admin", CSRF: "preview", ReadAll: true}
 		}
 	}
 }
 
 type previewRepo struct{}
 
+var previewNamespaces = []string{"acme", "observability", "platform", "sandbox"}
+
 func (previewRepo) ListNamespaces(context.Context) ([]domain.Namespace, error) {
 	result := []domain.Namespace{}
-	for _, n := range []string{"acme", "platform", "sandbox"} {
+	for _, n := range previewNamespaces {
 		result = append(result, domain.Namespace{Name: n, CreatedAt: time.Date(2026, 9, 12, 0, 0, 0, 0, time.UTC)})
 	}
 	return result, nil
 }
 
-var previewModules = map[string][]domain.Module{
-	"acme":     {{Namespace: "acme", Name: "subnet", System: "aws"}, {Namespace: "acme", Name: "vpc", System: "aws"}},
-	"platform": {{Namespace: "platform", Name: "cluster", System: "aws"}, {Namespace: "platform", Name: "project", System: "google"}},
-	"sandbox":  {{Namespace: "sandbox", Name: "resource-group", System: "azurerm"}},
+// previewModules spans many kinds of provider, including one nobody lists
+// (acmecorp), with publish times spread over the last few weeks.
+var previewModules = []struct {
+	ns, name, system string
+	versions         []string
+	age              time.Duration
+}{
+	{"acme", "vpc", "aws", []string{"1.0.0", "1.1.0", "1.2.0-beta.1"}, 26 * time.Hour},
+	{"acme", "subnet", "aws", []string{"1.0.0"}, 9 * 24 * time.Hour},
+	{"acme", "repo-baseline", "github", []string{"0.9.0", "1.0.0"}, 2 * time.Hour},
+	{"observability", "service-dashboard", "newrelic", []string{"2.0.0", "2.1.0"}, 5 * time.Hour},
+	{"observability", "slo-monitors", "datadog", []string{"1.0.1"}, 3 * 24 * time.Hour},
+	{"platform", "cluster", "aws", []string{"2.0.0", "2.1.0"}, 15 * 24 * time.Hour},
+	{"platform", "project", "google", []string{"1.0.0"}, 20 * 24 * time.Hour},
+	{"platform", "app-namespace", "kubernetes", []string{"1.6.0"}, 7 * 24 * time.Hour},
+	{"platform", "jar-runner", "acmecorp", []string{"0.3.0"}, 12 * 24 * time.Hour},
+	{"sandbox", "resource-group", "azurerm", []string{"1.0.0"}, 30 * 24 * time.Hour},
 }
 
-func (previewRepo) ListModules(context.Context) ([]domain.Module, error) {
-	var out []domain.Module
-	for _, ns := range []string{"acme", "platform", "sandbox"} {
-		out = append(out, previewModules[ns]...)
+func (previewRepo) ListPublishedVersions(_ context.Context, namespace string) ([]domain.Version, error) {
+	now := time.Now().UTC()
+	var out []domain.Version
+	for _, m := range previewModules {
+		if namespace != "" && m.ns != namespace {
+			continue
+		}
+		for i, v := range m.versions {
+			// Older versions a day apart before the newest.
+			at := now.Add(-m.age - time.Duration(len(m.versions)-1-i)*24*time.Hour)
+			out = append(out, domain.Version{Namespace: m.ns, Name: m.name, System: m.system, Version: v, Status: domain.VersionStatusActive, PublishedAt: at})
+		}
 	}
 	return out, nil
 }
-func (previewRepo) ListModulesInNamespace(_ context.Context, ns string) ([]domain.Module, error) {
-	return append([]domain.Module(nil), previewModules[ns]...), nil
-}
-func (previewRepo) ListActiveVersions(_ context.Context, ns, name, system string) ([]string, error) {
-	if name == "vpc" {
-		return []string{"1.0.0", "1.1.0"}, nil
-	}
-	if name == "cluster" {
-		return []string{"2.0.0", "2.1.0"}, nil
-	}
-	return []string{"1.0.0"}, nil
-}
+
 func (previewRepo) PublisherName(context.Context, string, string, string, string) (string, error) {
 	return "ci-publisher", nil
 }
@@ -137,6 +145,7 @@ func newPreviewTokens() *previewTokens {
 	lastUsed := now.Add(-2 * time.Hour)
 	expires := now.Add(30 * 24 * time.Hour)
 	revoked := now.Add(-24 * time.Hour)
+	soon := now.Add(3 * 24 * time.Hour)
 	return &previewTokens{tokens: []domain.Token{
 		{ID: "adm0preview0000000000000000", Kind: domain.TokenKindAdmin, Name: "bootstrap-admin", CreatedAt: now.Add(-30 * 24 * time.Hour), LastUsedAt: &now},
 		{ID: "ci00preview0000000000000000", Kind: domain.TokenKindStandard, Name: "ci-publisher", CreatedBy: "adm0preview0000000000000000", CreatedByName: "bootstrap-admin",
@@ -147,6 +156,11 @@ func newPreviewTokens() *previewTokens {
 			CreatedAt: now.Add(-3 * 24 * time.Hour), ExpiresAt: &expires,
 			Grants: []domain.Grant{{Namespace: domain.AllNamespaces, Permission: domain.PermModuleRead}},
 			Tags:   map[string]string{"owner": "alice", "email": "alice@example.com", "team": "networking"}},
+		{ID: "nrd0preview0000000000000000", Kind: domain.TokenKindStandard, Name: "nr-dashboards", CreatedAt: now.Add(-60 * 24 * time.Hour), LastUsedAt: &lastUsed, ExpiresAt: &soon,
+			Grants: []domain.Grant{{Namespace: "observability", Permission: domain.PermModuleRead}, {Namespace: "observability", Permission: domain.PermModulePublish}},
+			Tags:   map[string]string{"owner": "sre"}},
+		{ID: "stl0preview0000000000000000", Kind: domain.TokenKindStandard, Name: "legacy-deployer", CreatedAt: now.Add(-200 * 24 * time.Hour),
+			Grants: []domain.Grant{{Namespace: "platform", Permission: domain.PermModuleAll}}},
 		{ID: "old0preview0000000000000000", Kind: domain.TokenKindStandard, Name: "old-ci", CreatedAt: now.Add(-90 * 24 * time.Hour), RevokedAt: &revoked,
 			Grants: []domain.Grant{{Namespace: "sandbox", Permission: domain.PermModuleAll}}},
 	}}

@@ -1,0 +1,12 @@
+{{/* module-row: dict Module (moduleSummary), ShowNamespace (bool). A catalog
+     item: a dense row in the list layout, a card in the grid layout (the
+     same markup; layout lives in catalog.css). It sorts by name, then
+     namespace, or by data-updated. */}}
+{{define "module-row"}}{{with .Module}}<li class="module-row" data-item data-name="{{.Name}} {{.Namespace}}" data-updated="{{unix .UpdatedAt}}" data-provider="{{.System}}" data-search="{{if $.ShowNamespace}}{{.Namespace}} {{end}}{{.Name}} {{.System}} {{provider .System}}">
+    <a class="module-row__link" href="/n/{{.Namespace}}/{{.Name}}/{{.System}}">
+      <span class="module-row__title"><span class="module-row__name">{{.Name}}</span>{{if $.ShowNamespace}} <span class="module-row__ns">in {{.Namespace}}</span>{{end}}</span>
+      {{template "provider-tag" .System}}
+      <span class="module-row__version" title="{{plural .VersionCount "version" "versions"}}">{{.Latest}}</span>
+      <span class="module-row__updated" title="Updated {{date .UpdatedAt}}">{{ago .UpdatedAt}}</span>
+    </a>
+  </li>{{end}}{{end}}

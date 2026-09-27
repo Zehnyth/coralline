@@ -1,60 +1,77 @@
-/* panel — .panel with .panel-heading, .callout, and .meta-list (a
-   definition list; --stacked puts each value under its label). */
+/* panel — .panel (--flush: no padding, for lists that run edge to edge)
+   with .panel-heading or .panel-bar, .callout (--warning), and .meta-list
+   (a definition list of label/value rows). */
 .panel {
   min-width: 0;
-  padding: 24px;
-  background: var(--surface-2);
+  padding: 16px 18px;
+  background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+}
+.panel--flush {
+  padding: 0;
+  overflow: hidden;
+}
+.panel h2 {
+  font-size: 14px;
+  font-weight: 550;
 }
 .panel-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 22px;
-}
-.panel-heading h1, .panel-heading h2 {
-  font-size: 19px;
+  margin-bottom: 14px;
 }
 .panel-heading p {
-  margin-top: 8px;
+  margin-top: 3px;
   font-size: 13px;
 }
+.panel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.module-list--flush {
+  border: 0;
+  border-radius: 0;
+}
 .callout {
-  padding: 14px 16px;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
   background: var(--accent-soft);
   color: var(--text-2);
   font-size: 13px;
 }
+.callout .icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+.callout--warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
 .meta-list {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  gap: 10px 18px;
+  gap: 10px 16px;
   margin: 0;
   font-size: 13px;
 }
 .meta-list dt {
   color: var(--muted);
-  font-size: 12px;
 }
 .meta-list dd {
   margin: 0;
   color: var(--text-2);
+  text-align: right;
   overflow-wrap: anywhere;
-}
-.meta-list--stacked {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3px;
-}
-.meta-list--stacked dt:not(:first-child) {
-  margin-top: 14px;
-}
-
-@media (max-width: 700px) {
-  .panel {
-    padding: 20px;
-  }
 }

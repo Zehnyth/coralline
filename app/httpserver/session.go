@@ -195,8 +195,9 @@ func (g *uiGate) resolve(r *http.Request) requestViewer {
 	return requestViewer{token: tok, session: sess}
 }
 
-// uiViewer adapts the resolved identity for templates. Token names are only
-// exposed for admins.
+// uiViewer adapts the resolved identity for templates. The signed-in token's
+// own name and role are shown to whoever holds it; other tokens' names are
+// only ever shown to admins, on admin-gated pages.
 func (g *uiGate) uiViewer(r *http.Request) ui.Viewer {
 	v := ui.Viewer{LoginAvailable: true, ReadAll: !g.requireLogin}
 	rv := viewerFrom(r.Context())
@@ -207,12 +208,30 @@ func (g *uiGate) uiViewer(r *http.Request) ui.Viewer {
 	v.Authenticated = true
 	v.CSRF = rv.session.csrf
 	v.Readable = tok.CanRead
+	v.Name = tok.Name
+	v.Role = viewerRole(*tok)
 	if tok.IsAdmin() {
 		v.Admin = true
-		v.Name = tok.Name
 		v.ReadAll = true
 	}
 	return v
+}
+
+// viewerRole labels what the signed-in token can do, for the sidebar.
+func viewerRole(tok domain.Token) string {
+	if tok.IsAdmin() {
+		return "Admin"
+	}
+	role := "No access"
+	for _, gr := range tok.Grants {
+		switch gr.Permission {
+		case domain.PermModulePublish, domain.PermModuleAll:
+			return "Publisher"
+		case domain.PermModuleRead:
+			role = "Reader"
+		}
+	}
+	return role
 }
 
 // page wraps a browse-UI route: it resolves the viewer and, when sign-in is

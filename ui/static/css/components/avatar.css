@@ -1,57 +1,38 @@
-/* avatar — the module symbol and the namespace initial (tone-0..2 from the
-   `tone` template func, so a namespace keeps its colour everywhere).
-   .large is the page-heading size. */
+/* avatar — the module symbol and the namespace initial. A namespace's tone
+   (tone-0..7 from the `tone` template func) comes from its name, so it keeps
+   its colour everywhere. .large is the page-heading size. */
 .module-symbol, .namespace-avatar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border: 1px solid var(--border-accent);
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface-2);
 }
 .module-symbol {
   background: var(--accent-soft);
   color: var(--accent);
 }
+.module-symbol .icon {
+  width: 16px;
+  height: 16px;
+}
 .namespace-avatar {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
 }
-.tone-0 {
-  background: light-dark(#e0d6ee, #2d1f3c);
-  border-color: light-dark(#a58fc0, #59406c);
-  color: light-dark(#3b2358, #d7bdf0);
-}
-.tone-1 {
-  background: light-dark(#d7dbee, #1f243e);
-  border-color: light-dark(#8e98c2, #3e476a);
-  color: light-dark(#1a244b, #b5c3f3);
-}
-.tone-2 {
-  background: light-dark(#d5e7e3, #192e2d);
-  border-color: light-dark(#8fb3aa, #355652);
-  color: light-dark(#23483f, #a6d1c7);
-}
+.tone-0 { color: var(--tone-0); }
+.tone-1 { color: var(--tone-1); }
+.tone-2 { color: var(--tone-2); }
+.tone-3 { color: var(--tone-3); }
+.tone-4 { color: var(--tone-4); }
+.tone-5 { color: var(--tone-5); }
+.tone-6 { color: var(--tone-6); }
+.tone-7 { color: var(--tone-7); }
 .module-symbol.large, .namespace-avatar.large {
-  width: 64px;
-  height: 64px;
-  border-radius: 13px;
-  font-size: 28px;
-}
-.module-symbol.large .icon {
-  width: 30px;
-  height: 30px;
-}
-
-@media (max-width: 700px) {
-  .module-symbol.large, .namespace-avatar.large {
-    width: 50px;
-    height: 50px;
-    font-size: 23px;
-  }
-  .module-symbol.large .icon {
-    width: 24px;
-    height: 24px;
-  }
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  font-size: 16px;
 }

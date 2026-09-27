@@ -1,4 +1,6 @@
-{{/* heading-identity: dict Eyebrow, Title, Subtitle (optional),
-     SubtitleMono (optional bool), and either Icon (an icon name) or
-     Initial + Tone (a namespace avatar). The page's h1 on detail pages. */}}
-{{define "heading-identity"}}<div class="heading-identity">{{if .Icon}}<span class="module-symbol large" aria-hidden="true">{{icon .Icon}}</span>{{else}}<span class="namespace-avatar large tone-{{.Tone}}" aria-hidden="true">{{.Initial}}</span>{{end}}<div><span class="eyebrow">{{.Eyebrow}}</span><h1>{{.Title}}</h1>{{with .Subtitle}}<p{{if $.SubtitleMono}} class="mono"{{end}}>{{.}}</p>{{end}}</div></div>{{end}}
+{{/* heading-identity: dict Title, and optionally Eyebrow, Subtitle,
+     SubtitleMono (bool), Count (string), and either Icon (an icon name) or
+     Initial + Tone (a namespace avatar). The page's h1 on detail pages; the
+     breadcrumb above it already says where the page sits, so most callers
+     pass no eyebrow. */}}
+{{define "heading-identity"}}<div class="heading-identity">{{if .Icon}}<span class="module-symbol large" aria-hidden="true">{{icon .Icon}}</span>{{else if .Initial}}<span class="namespace-avatar large tone-{{.Tone}}" aria-hidden="true">{{.Initial}}</span>{{end}}<div>{{with .Eyebrow}}<span class="eyebrow">{{.}}</span>{{end}}<h1>{{.Title}}{{with .Count}} <span class="count">{{.}}</span>{{end}}</h1>{{with .Subtitle}}<p{{if $.SubtitleMono}} class="mono"{{end}}>{{.}}</p>{{end}}</div></div>{{end}}

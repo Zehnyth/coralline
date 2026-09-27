@@ -57,7 +57,7 @@ func New(d *Deps) (http.Handler, error) {
 		},
 	}
 
-	webHandlers, err := ui.NewHandlers(d.DB, d.DB, d.DB)
+	webHandlers, err := ui.NewHandlers(d.DB, d.DB)
 	if err != nil {
 		return nil, err
 	}

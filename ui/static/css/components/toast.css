@@ -6,11 +6,11 @@
   left: 50%;
   z-index: 50;
   max-width: min(90vw, 480px);
-  padding: 12px 22px;
-  border: 1px solid var(--border-accent);
+  padding: 9px 16px;
+  border: 0;
   border-radius: var(--radius);
-  background: var(--surface-raised);
-  color: var(--text);
+  background: var(--text);
+  color: var(--bg);
   box-shadow: var(--shadow);
   font-size: 13px;
   text-align: center;

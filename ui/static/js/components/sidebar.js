@@ -1,12 +1,13 @@
-// sidebar — the primary navigation (templates/shell/sidebar.html).
+// sidebar — the app shell's navigation panel (templates/shell/sidebar.html).
 //
-// Desktop (>700px): the in-panel toggle expands or collapses the rail; the
-// choice is remembered and re-applied before first paint by the head
-// script (:root[data-sidebar="expanded"]).
+// Desktop (>700px): the toggle next to the wordmark collapses the panel into
+// an icon rail and back. Expanded is the default; a collapsed choice is
+// remembered and re-applied before first paint by the head script
+// (:root[data-sidebar="collapsed"]).
 // Mobile (<=700px): an off-canvas drawer opened by sidebar-trigger. While
 // open, the page behind it is inert (so focus stays in the drawer), focus
-// moves to the current nav item, and Escape, the backdrop, or the close
-// button return focus to whatever opened it.
+// moves to the current nav item, and Escape, the backdrop, or the toggle
+// (which becomes a close button) return focus to whatever opened it.
 //
 // Parts: panel, backdrop, toggle. Props: content (id of the element made
 // inert while the drawer is open). Events: listens for sidebar:toggle,
@@ -29,15 +30,19 @@ export default function sidebar(root, { part, props }) {
   let opener = null;
 
   const isOpen = () => panel.classList.contains("is-open");
-  const isExpanded = () => html.dataset.sidebar === "expanded";
+  const isCollapsed = () => html.dataset.sidebar === "collapsed";
+
+  function label(text, expanded) {
+    toggle.setAttribute("aria-label", text);
+    toggle.title = text;
+    toggle.setAttribute("aria-expanded", String(expanded));
+  }
 
   function syncToggle(mobile) {
     if (mobile) {
-      toggle.setAttribute("aria-label", "Close navigation");
-      toggle.setAttribute("aria-expanded", String(isOpen()));
+      label("Close navigation", isOpen());
     } else {
-      toggle.setAttribute("aria-label", isExpanded() ? "Collapse sidebar" : "Expand sidebar");
-      toggle.setAttribute("aria-expanded", String(isExpanded()));
+      label(isCollapsed() ? "Expand sidebar" : "Collapse sidebar", !isCollapsed());
     }
   }
 
@@ -59,10 +64,10 @@ export default function sidebar(root, { part, props }) {
     }
   }
 
-  function setExpanded(expanded) {
-    if (expanded) {
-      html.dataset.sidebar = "expanded";
-      stored.set("expanded");
+  function setCollapsed(collapsed) {
+    if (collapsed) {
+      html.dataset.sidebar = "collapsed";
+      stored.set("collapsed");
     } else {
       delete html.dataset.sidebar;
       stored.remove();
@@ -81,7 +86,7 @@ export default function sidebar(root, { part, props }) {
 
   return combine(
     media.off,
-    on(toggle, "click", () => (media.matches() ? setOpen(false) : setExpanded(!isExpanded()))),
+    on(toggle, "click", () => (media.matches() ? setOpen(false) : setCollapsed(!isCollapsed()))),
     on(backdrop, "click", () => setOpen(false)),
     on(document, "keydown", (event) => {
       if (event.key === "Escape" && isOpen()) {

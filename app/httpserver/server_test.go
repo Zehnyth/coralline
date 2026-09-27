@@ -314,10 +314,14 @@ func TestStandardTokenCannotDiscoverTokensOrOtherNamespaces(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("/modules: %d", resp.StatusCode)
 	}
-	if !strings.Contains(body, "acme / vpc / aws") || strings.Contains(body, "secret / vpc") {
+	if !strings.Contains(body, `href="/n/acme/vpc/aws"`) || strings.Contains(body, `href="/n/secret`) {
 		t.Errorf("module listing not scoped to readable namespaces:\n%s", body)
 	}
-	for _, leak := range []string{`href="/tokens"`, "alice-reader", "bootstrap-admin", piiEmail} {
+	// The session sees its own token name and role, never anyone else's.
+	if !strings.Contains(body, "alice-reader") || !strings.Contains(body, ">Reader<") {
+		t.Error("sidebar does not show the signed-in token's own name and role")
+	}
+	for _, leak := range []string{`href="/tokens"`, "bootstrap-admin", piiEmail} {
 		if strings.Contains(body, leak) {
 			t.Errorf("standard session page contains %q", leak)
 		}
@@ -337,7 +341,7 @@ func TestStandardTokenCannotDiscoverTokensOrOtherNamespaces(t *testing.T) {
 	}
 
 	_, body = tr.get(c, "/n/acme/vpc/aws")
-	if strings.Contains(body, "Published by") || strings.Contains(body, "alice-reader") {
+	if strings.Contains(body, "Published by") {
 		t.Error("module page showed publisher attribution to a standard session")
 	}
 
@@ -451,7 +455,7 @@ func TestAnonymousModeStillHidesTokens(t *testing.T) {
 	c := tr.browser()
 
 	resp, body := tr.get(c, "/modules")
-	if resp.StatusCode != http.StatusOK || !strings.Contains(body, "secret / vpc / aws") {
+	if resp.StatusCode != http.StatusOK || !strings.Contains(body, `href="/n/secret/vpc/aws"`) {
 		t.Fatalf("anonymous listing: status %d", resp.StatusCode)
 	}
 	for _, leak := range []string{`href="/tokens"`, piiEmail, "alice-reader"} {

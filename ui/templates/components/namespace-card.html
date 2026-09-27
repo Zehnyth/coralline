@@ -1,11 +1,10 @@
 {{/* namespace-card: namespaceCard. A catalog item. The avatar tone comes
      from the name, so it doesn't change when the list is sorted or filtered. */}}
 {{define "namespace-card"}}<li class="card-item" data-item data-name="{{.Name}}" data-search="{{.Name}}{{range .Providers}} {{.}} {{provider .}}{{end}}">
-    <a class="card namespace-card" href="/n/{{.Name}}" aria-label="{{.Name}} namespace, {{plural .ModuleCount "module" "modules"}}">
-      <span class="card-top"><span class="namespace-avatar tone-{{tone .Name}}" aria-hidden="true">{{initial .Name}}</span><span class="card-arrow" aria-hidden="true">→</span></span>
+    <a class="card namespace-card" href="/n/{{.Name}}" title="Created {{date .CreatedAt}}">
+      <span class="card-top"><span class="namespace-avatar tone-{{tone .Name}}" aria-hidden="true">{{initial .Name}}</span><span class="card-arrow" aria-hidden="true">{{icon "arrow"}}</span></span>
       <h2 class="card-title">{{.Name}}</h2>
       <span class="card-subtitle">{{plural .ModuleCount "module" "modules"}}</span>
-      <span class="provider-tags">{{range .Providers}}{{template "provider-tag" .}}{{else}}<span class="empty-provider">Ready for its first module</span>{{end}}</span>
-      <span class="card-footer"><span>Created {{date .CreatedAt}}</span><span aria-hidden="true">Explore →</span></span>
+      <span class="provider-tags">{{range .Providers}}{{template "provider-tag" .}}{{end}}</span>
     </a>
   </li>{{end}}

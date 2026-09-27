@@ -1,31 +1,32 @@
 # Browse UI
 
-Server-rendered Go templates plus a handful of native ES-module components.
-There is no SPA, no npm, and no frontend build step. Everything is embedded in
-the Go binary.
+Clean, simple, intuitive, modern: each fact appears once per screen, and each
+action has one entry point. The palette is violet on a soft charcoal (dark)
+or near-white (light). All styles, scripts, and artwork are embedded in the
+Go binary; no frontend build or externally hosted assets are required.
 
-- The home page is a text hero with a link to the getting-started guide.
-- Namespace and module lists support search, sorting, and (for modules)
-  provider filtering. The view is kept in the URL, so it can be bookmarked.
-  Listings only include namespaces the signed-in token can read.
-- Module pages support version selection and copying the registry source and
-  pinned configuration. The newest stable release is the default
-  ("Recommended"); a module with only pre-releases shows "Latest" instead.
-  Admins also see which token published the selected version.
-- The Tokens section (admins only) lists every token with its grants, tags, and
-  last use; filters by tag; creates standard tokens; and edits grants and tags
-  or revokes existing ones. Admin tokens are read-only here.
-- A new token's secret is shown **once**, on `/tokens/{id}/created`, and only to
-  the browser session that created it. Creating the token redirects there; the
-  secret is never in a URL. Every create form carries a single-use submission
-  key, so a double click, a refresh, or Back + resubmit can't mint twice.
+- The sidebar is the whole shell: wordmark and collapse arrow, navigation,
+  the Publish guide (the guide's only entry point), and the identity row
+  with the signed-in token's own name and role, the theme toggle, and
+  sign-out. It collapses into an icon rail (remembered per browser) and
+  becomes a drawer at phone widths, where a slim topbar opens it.
+- The overview ("/") shows namespace, module, version, and provider counts
+  and the most recently published modules, all scoped to what the viewer
+  can read.
+- Module lists support search, a provider filter grouped by category, sort
+  by name or most recently updated, and a list or grid layout. Filters are
+  kept in the URL. Providers the UI doesn't know still get a readable name
+  and a stable colour (see `providers.go`), so any Terraform provider works.
+- Module pages pick the version from one selector and copy the pinned
+  configuration or just the source. Admins also see which token published it.
+- The Tokens section (admins only) lists every token with its access,
+  tags, last use, and expiry, filtered by status or searched by name/tag
+  in the browser; creates standard tokens with expiry presets (shown once,
+  with ready-to-use snippets); and edits access per namespace (None / Read /
+  Publish) and tags, or revokes. Admin tokens are read-only here.
 - The sign-in page (`/login`) is standalone: it renders without the app shell.
-- Unknown pages, and pages the viewer may not know exist, get a styled 404
-  inside the shell. Every HTML page is `Cache-Control: no-store`.
-- The theme follows the OS until the viewer picks one with the toggle.
-- Layouts adapt at 1180, 960, and 700 pixels (the sidebar becomes a drawer at
-  700), with keyboard focus rings, a skip link, labelled controls, one `<h1>`
-  per page, and reduced-motion support.
+- Layouts adapt at 1180, 960, and 700 pixels, with keyboard focus, a skip link,
+  accessible control labels, and reduced-motion support.
 
 ## How it's put together
 

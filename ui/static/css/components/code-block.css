@@ -47,14 +47,14 @@
 pre {
   margin: 0;
   overflow: auto;
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 12.5px;
+  line-height: 1.7;
 }
 pre code {
   color: var(--text-2);
 }
 .code-block pre {
-  padding: 20px 22px;
+  padding: 14px 16px;
 }
 
 @media (max-width: 700px) {

@@ -4,64 +4,77 @@
 
    Colours are semantic tokens built with light-dark(). With no saved choice
    the page follows the OS colour scheme; the theme toggle pins
-   :root[data-theme]. Components use these tokens, never raw colours. */
+   :root[data-theme]. Components use these tokens, never raw colours. The
+   dark theme is a soft charcoal, not black, so surfaces visibly step up. */
 :root {
   color-scheme: light dark;
 
   /* Surfaces, from the page background up. */
-  --bg: light-dark(#f7f5fb, #0d0c14);
-  --bg-sidebar: light-dark(#ffffff, #09080f);
-  --surface-1: light-dark(#eeecf1, #110e18);
-  --surface-2: light-dark(#e9e7ee, #14111d);
-  --surface-3: light-dark(#e3e1e8, #17121f);
-  --surface-raised: light-dark(#dedbe4, #1b1625);
-  --surface-hover: light-dark(#d9d4e1, #221b2d);
-  --surface-accent: light-dark(#e2d9f2, #1d1430);
-  --code-bg: light-dark(#f2f0f5, #0b0912);
-  --code-title-bg: light-dark(#e2dfe7, #1c1525);
+  --bg: light-dark(#f8f7fb, #17151f);
+  --bg-sidebar: light-dark(#ffffff, #131119);
+  --surface-1: light-dark(#ffffff, #1d1a26);
+  --surface-2: light-dark(#f3f0f7, #25212f);
+  --surface-3: light-dark(#ffffff, #1d1a26);
+  --surface-raised: light-dark(#f3f0f7, #25212f);
+  --surface-hover: light-dark(#efebf5, #282333);
+  --surface-accent: light-dark(#eee8f8, #2c2240);
+  --code-bg: light-dark(#f6f4f9, #131119);
+  --code-title-bg: light-dark(#efecf4, #1d1a26);
 
   /* Borders. */
-  --border: light-dark(#d8d4df, #292433);
-  --border-strong: light-dark(#b9b3c3, #3c324b);
+  --border: light-dark(#e7e2ee, #2f2a3a);
+  --border-strong: light-dark(#cfc7da, #403850);
   --border-accent: light-dark(#8f73ad, #6e4d91);
 
   /* Text. --muted keeps at least 4.5:1 on every surface above. */
   --text: light-dark(#1c1726, #f1edf8);
-  --text-2: light-dark(#3a3145, #d3c6e1);
-  --muted: light-dark(#5b5268, #a89cb8);
+  --text-2: light-dark(#3a3145, #d3c8e0);
+  --muted: light-dark(#62586f, #a79cb6);
 
-  /* Accent (links, eyebrows, current state) and brand (primary actions). */
-  --accent: light-dark(#5b33b0, #b493ff);
+  /* Accent (links, current state) and brand (primary actions). */
+  --accent: light-dark(#5b33b0, #b99bff);
   --accent-strong: light-dark(#3a1f73, #d2b8ff);
-  --accent-soft: light-dark(#dcd2ec, #251a33);
-  --brand: #6842ca;
+  --accent-soft: light-dark(#eee8f8, #2c2240);
+  --brand: light-dark(#6842ca, #6d47d1);
   --brand-hover: light-dark(#532fa8, #7d52de);
-  --brand-border: light-dark(#4d2a94, #8b62de);
+  --brand-border: light-dark(#5a36b8, #7d52de);
   --on-brand: #ffffff;
-  --focus: light-dark(#5b33b0, #b493ff);
+  --focus: light-dark(#5b33b0, #b99bff);
 
   /* Status. */
-  --success: light-dark(#23604b, #95c9b5);
-  --success-bg: light-dark(#dcebe4, #13231c);
-  --success-border: light-dark(#a3c6b8, #284a3e);
+  --success: light-dark(#23604b, #7fd1b6);
+  --success-bg: light-dark(#dcebe4, #1a2e26);
+  --success-border: light-dark(#a3c6b8, #2c5244);
   --live: light-dark(#2e8f70, #75cbb0);
-  --warning: light-dark(#7a4518, #eeb994);
-  --danger: light-dark(#a8322d, #eba3a3);
-  --provider-aws: light-dark(#8a5519, #e8ac64);
-  --provider-google: light-dark(#234478, #77a5ec);
-  --provider-azure: light-dark(#1f6682, #67bee1);
+  --warning: light-dark(#7a4518, #f0c09c);
+  --warning-bg: light-dark(#f6e9dc, #33261a);
+  --danger: light-dark(#a8322d, #f0aaaa);
+  --danger-bg: light-dark(#f8e3e1, #351d20);
+
+  /* Tones: provider tags and namespace avatars (tone-N from the provider
+     table or a name hash, so a name always gets the same colour). */
+  --tone-0: light-dark(#8a5519, #e8ac64);
+  --tone-1: light-dark(#234478, #80acef);
+  --tone-2: light-dark(#1f6682, #6cc3e4);
+  --tone-3: light-dark(#2d6a3e, #86d3a0);
+  --tone-4: light-dark(#993556, #f095bd);
+  --tone-5: light-dark(#5b33b0, #b99bff);
+  --tone-6: light-dark(#993c1d, #f2a083);
+  --tone-7: light-dark(#0f6e56, #62cfa9);
+  --tone-n: light-dark(#524c5c, #bdb6c9);
 
   /* Type, shape, motion. */
   --sans: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --radius-sm: 5px;
-  --radius: 8px;
-  --radius-lg: 11px;
+  --radius: 7px;
+  --radius-lg: 12px;
+  --h-control: 32px;
   --ease: cubic-bezier(.16, 1, .3, 1);
-  --shadow: 0 8px 28px light-dark(#1c172622, #0008);
+  --shadow: 0 12px 32px light-dark(#1c172624, #0007);
 
-  --sidebar-rail: 62px;
-  --sidebar-panel: 236px;
+  --sidebar-rail: 56px;
+  --sidebar-panel: 248px;
 }
 :root[data-theme="light"] {
   color-scheme: light;
@@ -110,19 +123,19 @@ h1, h2, h3, p {
   margin: 0;
 }
 h1, h2, h3 {
-  font-weight: 600;
+  font-weight: 550;
   line-height: 1.2;
-  letter-spacing: -.02em;
+  letter-spacing: -.015em;
   overflow-wrap: anywhere;
 }
 h1 {
-  font-size: 32px;
+  font-size: 22px;
 }
 h2 {
-  font-size: 21px;
+  font-size: 16px;
 }
 h3 {
-  font-size: 17px;
+  font-size: 14px;
 }
 p {
   color: var(--muted);

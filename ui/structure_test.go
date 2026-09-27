@@ -186,7 +186,7 @@ func TestAssetsBundleOrder(t *testing.T) {
 }
 
 func TestEmbeddedAssetsAreServed(t *testing.T) {
-	h := newTestHandlers(t, namespaceRepoStub{}, moduleRepoStub{}, versionRepoStub{}, openViewer)
+	h := newTestHandlers(t, namespaceRepoStub{}, moduleRepoStub{}, openViewer)
 	for _, p := range []string{bundlePath, "js/app.js", "js/core/component.js", "img/favicon.svg", "css/pages/home.css"} {
 		if rr := serve(h.Assets, h.Assets.URL(p), nil); rr.Code != http.StatusOK {
 			t.Errorf("%s: status %d", p, rr.Code)

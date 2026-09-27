@@ -1,4 +1,7 @@
-{{/* layout: the app shell. Pages fill "title", "styles", and "content". */}}
+{{/* layout: the app shell. Pages fill "title", "styles", and "content".
+     Everything global (navigation, the publish guide, theme, identity)
+     lives in the sidebar; the topbar only exists at phone widths, to open
+     the navigation drawer. */}}
 {{define "layout"}}<!DOCTYPE html>
 <html lang="en">
 <head>

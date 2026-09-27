@@ -42,14 +42,10 @@ type NamespaceRepo interface {
 }
 
 type ModuleRepo interface {
-	// ListModules returns every module with at least one active version,
-	// across all namespaces, in one query.
-	ListModules(ctx context.Context) ([]domain.Module, error)
-	ListModulesInNamespace(ctx context.Context, namespace string) ([]domain.Module, error)
-}
-
-type VersionRepo interface {
-	ListActiveVersions(ctx context.Context, namespace, name, system string) ([]string, error)
+	// ListPublishedVersions returns every active version with its publish
+	// time — across all namespaces when namespace is "" — in one query.
+	// Listings, the overview, and module pages are all derived from it.
+	ListPublishedVersions(ctx context.Context, namespace string) ([]domain.Version, error)
 }
 
 // PublisherRepo resolves who published a version. It is only consulted for
@@ -63,8 +59,12 @@ type Viewer struct {
 	Authenticated bool
 	// Admin viewers can see and manage tokens and see token names.
 	Admin bool
-	// Name is the signed-in token's name, populated only for admins.
+	// Name is the signed-in token's own name, shown to whoever holds it.
+	// Other tokens' names are only ever shown to admins.
 	Name string
+	// Role labels what the signed-in token can do ("Admin", "Publisher",
+	// "Reader").
+	Role string
 	// CSRF is the per-session value every mutating form must echo back.
 	CSRF string
 	// LoginAvailable shows a Sign in link to anonymous viewers.
@@ -86,7 +86,6 @@ func (v Viewer) CanRead(namespace string) bool {
 type Handlers struct {
 	Namespaces NamespaceRepo
 	Modules    ModuleRepo
-	Versions   VersionRepo
 	// Viewer resolves the requester. When nil, every request is an anonymous
 	// viewer who can read nothing — the UI fails closed.
 	Viewer func(r *http.Request) Viewer
@@ -107,7 +106,7 @@ type Handlers struct {
 }
 
 // NewHandlers parses every page template and prepares the embedded assets.
-func NewHandlers(ns NamespaceRepo, mods ModuleRepo, vers VersionRepo) (*Handlers, error) {
+func NewHandlers(ns NamespaceRepo, mods ModuleRepo) (*Handlers, error) {
 	static, err := fs.Sub(staticFS, "static")
 	if err != nil {
 		return nil, err
@@ -116,7 +115,7 @@ func NewHandlers(ns NamespaceRepo, mods ModuleRepo, vers VersionRepo) (*Handlers
 	if err != nil {
 		return nil, fmt.Errorf("preparing static assets: %w", err)
 	}
-	h := &Handlers{Namespaces: ns, Modules: mods, Versions: vers, Assets: assets}
+	h := &Handlers{Namespaces: ns, Modules: mods, Assets: assets}
 	if h.templates, err = parseTemplates(templatesFS, h.funcs()); err != nil {
 		return nil, err
 	}

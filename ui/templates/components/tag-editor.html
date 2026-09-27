@@ -1,0 +1,9 @@
+{{/* tag-editor: dict ID (the textarea id), Text (one key=value per line).
+     The textarea named "tags" is what submits; with JavaScript the
+     tag-editor component shows it as removable chips plus an input. */}}
+{{define "tag-editor"}}<div class="tag-editor" data-component="tag-editor">
+  <label class="visually-hidden" for="{{.ID}}">Tags, one key=value per line</label>
+  <textarea class="textarea" id="{{.ID}}" name="tags" data-part="source" placeholder="owner=alice&#10;team=platform" spellcheck="false">{{.Text}}</textarea>
+  <div class="chip-input" data-part="chips" hidden><input type="text" data-part="entry" placeholder="key=value, then Enter" autocomplete="off" spellcheck="false" aria-label="Add a tag"></div>
+  <p class="field-error" data-part="error" role="alert" hidden></p>
+</div>{{end}}

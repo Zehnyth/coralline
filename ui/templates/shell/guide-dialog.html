@@ -1,8 +1,8 @@
 {{/* guide-dialog: basePage. The getting-started guide, opened by any
      guide-trigger button on the page. */}}
 {{define "guide-dialog"}}<dialog class="guide-dialog" id="guide-dialog" data-component="guide-dialog" aria-labelledby="guide-title">
-  <div class="dialog-head"><span class="eyebrow">Quick start</span><button type="button" class="icon-button" data-part="close" aria-label="Close getting started">{{icon "close"}}</button></div>
-  <h2 id="guide-title">From module to registry.</h2>
+  <div class="dialog-head"><span class="dialog-kicker">From module to registry</span><button type="button" class="icon-button" data-part="close" aria-label="Close publish guide">{{icon "close"}}</button></div>
+  <h2 id="guide-title">Publish guide</h2>
   <p class="muted">Run these commands on your registry host. Set <code>CORALLINE_ADMIN_CREDENTIAL</code> to the admin token printed on first boot.</p>
   <ol class="guide-steps">
     <li><strong>Create a namespace</strong><pre><code>coralline namespace create platform</code></pre></li>

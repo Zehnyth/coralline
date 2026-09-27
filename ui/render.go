@@ -157,7 +157,7 @@ func (h *Handlers) serverError(w http.ResponseWriter, r *http.Request, err error
 
 func (h *Handlers) errorPage(w http.ResponseWriter, r *http.Request, status int, heading, message string) {
 	h.renderStatus(w, r, "error", errorPage{
-		basePage:      h.base(r, "", sectionBrowse),
+		basePage:      h.base(r, ""),
 		Status:        status,
 		Heading:       heading,
 		Message:       message,

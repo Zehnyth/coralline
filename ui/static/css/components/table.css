@@ -1,9 +1,9 @@
-/* table — .data-table inside a horizontally scrollable .data-table-wrap
-   (focusable, so keyboard users can scroll it). */
+/* table — .data-table. Wide tables sit in a horizontally scrollable
+   .data-table-wrap (focusable, so keyboard users can scroll it). */
 .data-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   background: var(--surface-1);
 }
 .data-table {
@@ -12,18 +12,15 @@
   font-size: 13px;
 }
 .data-table th, .data-table td {
-  padding: 12px 14px;
+  padding: 10px 14px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .data-table thead th {
   border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
   white-space: nowrap;
 }
 .data-table tbody th {
@@ -33,7 +30,7 @@
   border-top: 1px solid var(--border);
 }
 .data-table tbody tr:hover {
-  background: var(--surface-2);
+  background: var(--surface-hover);
 }
 
 @media (max-width: 700px) {

@@ -1,10 +1,10 @@
 /* form — fields, inputs, selects, choice chips, alerts, and form actions. */
 select {
-  min-height: 40px;
-  padding: 8px 34px 8px 11px;
+  min-height: var(--h-control);
+  padding: 5px 30px 5px 10px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  background-color: var(--surface-3);
+  background-color: var(--surface-1);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%238a8196' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-position: right 11px center;
   background-repeat: no-repeat;
@@ -41,10 +41,10 @@ fieldset.field {
 }
 .input, .textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 7px 10px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  background: var(--surface-3);
+  background: var(--surface-1);
   color: var(--text);
   font-size: 13px;
 }
@@ -127,5 +127,151 @@ fieldset:disabled .choice {
 @media (max-width: 700px) {
   .form-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* segmented — a radio group drawn as one pill of options (status filters,
+   access levels, expiry presets). The radios stay real radios, so arrow
+   keys and forms work as usual. */
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+.segmented__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.segmented__option:hover {
+  color: var(--text);
+}
+.segmented__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.segmented__option:has(input:checked) {
+  background: var(--surface-1);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+.segmented__option:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.segmented__count {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* form-section — a labelled row of a long form: label and help on the
+   left, controls on the right. */
+.form-section {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 18px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+.form-section:first-of-type {
+  border-top: 0;
+  padding-top: 4px;
+}
+.form-section__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  float: left;
+  padding: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+}
+.form-section__label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.form-section__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.form-section__body .input, .form-section__body select {
+  max-width: 360px;
+}
+.form-actions--end {
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.field-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+/* chip-input — the tag-editor's chips and entry field. */
+.tag-editor {
+  width: 100%;
+  max-width: 480px;
+}
+.chip-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--h-control);
+  padding: 3px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  cursor: text;
+}
+.chip-input:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 1px var(--focus);
+}
+.chip-input input {
+  flex: 1 1 140px;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+  font: 12px var(--mono);
+}
+.chip__remove {
+  margin-left: 2px;
+  padding: 0 2px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+}
+.chip__remove:hover {
+  color: var(--danger);
+}
+
+@media (max-width: 700px) {
+  .form-section {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }

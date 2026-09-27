@@ -38,7 +38,7 @@ type NewToken struct {
 // savedNotices maps the ?saved= value set by post-redirect-get to a fixed
 // message; query text is never reflected into the page.
 var savedNotices = map[string]string{
-	"grants":    "Grants saved.",
+	"grants":    "Access saved.",
 	"tags":      "Tags saved.",
 	"revoked":   "Token revoked.",
 	"duplicate": "That form was already submitted, so no new token was created.",
@@ -64,34 +64,29 @@ func (h *Handlers) parseForm(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-// TokenList renders "/tokens", optionally filtered by ?tag=key=value.
+// TokenList renders "/tokens". Search and the status filter run in the
+// browser (the catalog component), over every token.
 func (h *Handlers) TokenList(w http.ResponseWriter, r *http.Request) {
 	if !h.requireTokenAdmin(w, r) {
 		return
 	}
-	filterText := strings.TrimSpace(r.URL.Query().Get("tag"))
-	page := tokensPage{
-		basePage:  h.base(r, navTokens, sectionTokens),
-		TagFilter: filterText,
-		Notice:    savedNotices[r.URL.Query().Get("saved")],
-	}
-	filter, err := domain.ParseTokenFilter(filterText)
-	if err != nil {
-		page.Error = userMessage(err)
-		h.renderStatus(w, r, "tokens", page, http.StatusBadRequest)
-		return
-	}
-	toks, err := h.TokenAdmin.ListTokens(r.Context(), filter)
+	toks, err := h.TokenAdmin.ListTokens(r.Context(), domain.TokenFilter{})
 	if err != nil {
 		h.serverError(w, r, err)
 		return
 	}
 	now := time.Now()
-	page.Tokens = make([]tokenRow, 0, len(toks))
+	rows := make([]tokenRow, 0, len(toks))
 	for _, t := range toks {
-		page.Tokens = append(page.Tokens, newTokenRow(t, now))
+		rows = append(rows, newTokenRow(t, now))
 	}
-	h.render(w, r, "tokens", page)
+	h.render(w, r, "tokens", tokensPage{
+		basePage:   h.base(r, navTokens),
+		Catalog:    catalogProps{Singular: "token", Plural: "tokens", Placeholder: "Name or tag", Total: len(rows)},
+		Tokens:     rows,
+		StatusTabs: statusTabs(rows),
+		Notice:     savedNotices[r.URL.Query().Get("saved")],
+	})
 }
 
 // NewTokenForm renders "/tokens/new".
@@ -99,7 +94,7 @@ func (h *Handlers) NewTokenForm(w http.ResponseWriter, r *http.Request) {
 	if !h.requireTokenAdmin(w, r) {
 		return
 	}
-	h.renderTokenForm(w, r, tokenForm{Role: "reader", ExpiresInHours: "0"}, "", http.StatusOK)
+	h.renderTokenForm(w, r, tokenForm{Role: "reader", Expiry: "720"}, "", http.StatusOK)
 }
 
 // renderTokenForm draws the create form with a fresh submission key, so a
@@ -123,11 +118,12 @@ func (h *Handlers) renderTokenForm(w http.ResponseWriter, r *http.Request, form 
 		return
 	}
 	h.renderStatus(w, r, "token_new", tokenFormPage{
-		basePage:          h.base(r, navTokens, sectionTokens),
+		basePage:          h.base(r, navTokens),
 		Form:              form,
 		Namespaces:        names,
 		Roles:             roleOptions(),
 		PermissionOptions: permissionOptions(form.Permissions),
+		ExpiryOptions:     expiryOptions(maxExpiryHours),
 		MaxExpiryHours:    maxExpiryHours,
 		Error:             formErr,
 	}, status)
@@ -152,6 +148,7 @@ func (h *Handlers) CreateToken(w http.ResponseWriter, r *http.Request) {
 		Role:           r.PostForm.Get("role"),
 		Permissions:    r.PostForm["permission"],
 		TagsText:       r.PostForm.Get("tags"),
+		Expiry:         r.PostForm.Get("expiry"),
 		ExpiresInHours: strings.TrimSpace(r.PostForm.Get("expires_in_hours")),
 	}
 	key := r.PostForm.Get("_submission")
@@ -206,17 +203,19 @@ func (h *Handlers) TokenCreated(w http.ResponseWriter, r *http.Request) {
 		plaintext, _ = h.Reveals.Take(r, tok.ID)
 	}
 	h.render(w, r, "token_created", tokenCreatedPage{
-		basePage:  h.base(r, navTokens, sectionTokens),
-		Token:     newTokenRow(*tok, time.Now()),
-		Plaintext: plaintext,
+		basePage:   h.base(r, navTokens),
+		Token:      newTokenRow(*tok, time.Now()),
+		Plaintext:  plaintext,
+		EnvVar:     terraformEnvVar(r.Host),
+		CanPublish: canPublish(*tok),
 	})
 }
 
 type tokenDetailState struct {
 	Notice        string
 	Error         string
-	SubmittedTags *string         // re-show what was typed after a rejected tag edit
-	CheckedGrants map[string]bool // re-show what was ticked after a rejected grant edit
+	SubmittedTags *string           // re-show what was typed after a rejected tag edit
+	Levels        map[string]string // re-show the chosen access levels after a rejected edit
 }
 
 // TokenDetail renders "/tokens/{id}".
@@ -256,9 +255,9 @@ func (h *Handlers) renderTokenDetail(w http.ResponseWriter, r *http.Request, tok
 	}
 	row := newTokenRow(*tok, time.Now())
 	h.renderStatus(w, r, "token_detail", tokenDetailPage{
-		basePage:       h.base(r, navTokens, sectionTokens),
+		basePage:       h.base(r, navTokens),
 		Token:          row,
-		Matrix:         buildGrantMatrix(ns, tok.Grants, st.CheckedGrants),
+		Access:         buildAccessRows(ns, tok.Grants, st.Levels),
 		TagsText:       tagsText,
 		Notice:         st.Notice,
 		Error:          st.Error,
@@ -268,23 +267,18 @@ func (h *Handlers) renderTokenDetail(w http.ResponseWriter, r *http.Request, tok
 	}, status)
 }
 
-// UpdateTokenGrants handles POST "/tokens/{id}/grants". Only active tokens
-// can have their grants changed; the form isn't shown for others.
+// UpdateTokenGrants handles POST "/tokens/{id}/grants": one access level
+// per namespace (access:<ns> = none | read | publish | custom). Only active
+// tokens can have their access changed; the form isn't shown for others.
 func (h *Handlers) UpdateTokenGrants(w http.ResponseWriter, r *http.Request) {
 	if !h.requireTokenAdmin(w, r) || !h.parseForm(w, r) {
 		return
 	}
-	values := r.PostForm["grant"]
-	checked := make(map[string]bool, len(values))
-	grants := make([]domain.GrantInput, 0, len(values))
-	for _, v := range values {
-		ns, perm, ok := strings.Cut(v, "|")
-		if !ok {
-			h.badRequest(w, r)
-			return
+	levels := map[string]string{}
+	for key, values := range r.PostForm {
+		if ns, ok := strings.CutPrefix(key, accessFormPrefix); ok && len(values) > 0 {
+			levels[ns] = values[0]
 		}
-		checked[v] = true
-		grants = append(grants, domain.GrantInput{Namespace: ns, Permission: perm})
 	}
 	id := r.PathValue("id")
 	tok, ok := h.loadToken(w, r)
@@ -292,11 +286,15 @@ func (h *Handlers) UpdateTokenGrants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !tok.IsAdmin() && !tok.Active(time.Now()) {
-		h.renderTokenDetail(w, r, tok, tokenDetailState{Error: "This token is no longer active, so its grants can't be changed."}, http.StatusBadRequest)
+		h.renderTokenDetail(w, r, tok, tokenDetailState{Error: "This token is no longer active, so its access can't be changed."}, http.StatusBadRequest)
 		return
 	}
-	if err := h.TokenAdmin.ReplaceGrants(r.Context(), id, grants); err != nil {
-		h.tokenDetailError(w, r, err, tokenDetailState{CheckedGrants: checked})
+	grants, err := grantsFromLevels(levels, tok.Grants)
+	if err == nil {
+		err = h.TokenAdmin.ReplaceGrants(r.Context(), id, grants)
+	}
+	if err != nil {
+		h.tokenDetailError(w, r, err, tokenDetailState{Levels: levels})
 		return
 	}
 	redirectSaved(w, r, id, "grants")

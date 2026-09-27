@@ -1,13 +1,7 @@
-{{/* topbar: basePage. Section names the current area of the app. */}}
-{{define "topbar"}}<header class="topbar">
-  <div class="topbar-crumb">
-    <button class="icon-button mobile-menu-toggle" type="button" data-component="sidebar-trigger" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">{{icon "menu"}}</button>
-    <span class="registry-dot" aria-hidden="true"></span>
-    <span class="topbar-crumb__text">Registry <span class="slash" aria-hidden="true">/</span> <span>{{.Section}}</span></span>
-  </div>
-  <div class="topbar-right">
-    <button type="button" class="icon-button theme-toggle" data-component="theme-toggle" aria-label="Dark theme" aria-pressed="true">{{icon "sun"}}{{icon "moon"}}</button>
-    <span class="connection" data-component="health-status" data-state="checking" title="Checking registry"><span class="status-dot" aria-hidden="true"></span><span class="connection__label" data-part="label">Checking registry</span></span>
-    {{template "session-controls" .}}
-  </div>
+{{/* topbar: basePage. Only shown at 700px and below, where the sidebar is an
+     off-canvas drawer: it holds the drawer trigger and the wordmark. On
+     wider screens the sidebar carries everything, so there is no topbar. */}}
+{{define "topbar"}}<header class="mobile-bar">
+  <button class="icon-button" type="button" data-component="sidebar-trigger" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">{{icon "menu"}}</button>
+  <a class="wordmark" href="/">Coralline</a>
 </header>{{end}}

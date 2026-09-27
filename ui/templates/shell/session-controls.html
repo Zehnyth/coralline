@@ -1,3 +1,14 @@
-{{/* session-controls: basePage. Token names are only ever shown to admins; a
-     standard viewer sees "Signed in" without learning their own token's name. */}}
-{{define "session-controls"}}{{with .Viewer}}<div class="topbar-session">{{if .Authenticated}}<span class="topbar-user">{{if .Admin}}Signed in as <strong>{{.Name}}</strong>{{else}}Signed in{{end}}</span><form method="post" action="/logout"><input type="hidden" name="_csrf" value="{{.CSRF}}"><button type="submit" class="topbar-link">Sign out</button></form>{{else if .LoginAvailable}}<a class="topbar-link" href="/login">Sign in</a>{{end}}</div>{{end}}{{end}}
+{{/* session-controls: basePage. The sidebar's identity row: the signed-in
+     token's own name and role, the theme toggle, and sign-out (or sign-in).
+     Only the viewer's own token name is shown here; other tokens' names
+     appear only on admin pages. */}}
+{{define "session-controls"}}{{with .Viewer}}<div class="identity">
+  {{if .Authenticated}}<span class="identity__avatar" aria-hidden="true">{{if .Name}}{{initial .Name}}{{else}}{{icon "key"}}{{end}}</span>
+  <span class="identity__who"><span class="identity__name">{{with .Name}}{{.}}{{else}}Signed in{{end}}</span><span class="identity__role">{{with .Role}}{{.}}{{else}}{{if .Admin}}Admin{{else}}Token{{end}}{{end}}</span></span>
+  {{else if .LoginAvailable}}<a class="identity__signin" href="/login">{{icon "lock"}}<span>Sign in</span></a>
+  {{else}}<span class="identity__who"></span>{{end}}
+  <span class="identity__actions">
+    <button type="button" class="icon-button theme-toggle" data-component="theme-toggle" aria-label="Dark theme" aria-pressed="true">{{icon "sun"}}{{icon "moon"}}</button>
+    {{if .Authenticated}}<form method="post" action="/logout"><input type="hidden" name="_csrf" value="{{.CSRF}}"><button type="submit" class="icon-button" aria-label="Sign out" title="Sign out">{{icon "logout"}}</button></form>{{end}}
+  </span>
+</div>{{end}}{{end}}

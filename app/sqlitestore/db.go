@@ -11,6 +11,7 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite" // pure-Go driver, no cgo — registers as "sqlite"
@@ -24,6 +25,13 @@ type DB struct {
 }
 
 func Open(path string) (*DB, error) {
+	// The path is spliced into a URI-style DSN: '?' would start (and let the
+	// path override) the pragma list below, '#' ends the filename, and '%'
+	// is decoded as a URI escape. None is ever needed in a real path, so
+	// refuse them rather than guess at escaping.
+	if path == "" || strings.ContainsAny(path, "?#%") {
+		return nil, fmt.Errorf("database path %q must be non-empty and must not contain '?', '#', or '%%'", path)
+	}
 	// modernc.org/sqlite DSN pragmas: WAL mode + a busy timeout so a
 	// concurrent writer doesn't fail fast with SQLITE_BUSY under normal
 	// load (see PRD FR-6.2 / SR-3.3-adjacent write contention notes).

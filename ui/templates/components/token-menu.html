@@ -1,0 +1,11 @@
+{{/* token-menu: tokenRow. A row's ⋯ menu: view, copy the token id, and
+     revoke (which goes to the token page, where revoking is confirmed).
+     Admin tokens can't be revoked here; they're managed from the CLI. */}}
+{{define "token-menu"}}<details class="row-menu" data-component="row-menu">
+  <summary class="icon-button" aria-label="Actions for {{.Name}}" title="Actions">{{icon "dots"}}</summary>
+  <div class="row-menu__list">
+    <a href="/tokens/{{.ID}}">{{icon "eye"}} View</a>
+    <span id="token-id-{{.ID}}" hidden>{{.ID}}</span><button type="button" data-component="copy-button" data-target="token-id-{{.ID}}" data-message="Token id copied to clipboard">{{icon "copy"}} Copy id</button>
+    {{if and (not .IsAdmin) (ne .Status "revoked")}}<a class="row-menu__danger" href="/tokens/{{.ID}}#revoke">{{icon "ban"}} Revoke…</a>{{end}}
+  </div>
+</details>{{end}}

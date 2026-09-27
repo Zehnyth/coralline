@@ -179,46 +179,34 @@ func (db *DB) PublisherName(ctx context.Context, namespace, name, system, versio
 	return "", nil
 }
 
-// ListModules returns every module with at least one active version, across
-// all namespaces, in one query — the browse UI's listings filter it by the
-// viewer's readable namespaces instead of querying once per namespace.
-func (db *DB) ListModules(ctx context.Context) ([]domain.Module, error) {
+// ListPublishedVersions returns every active version — across all
+// namespaces when namespace is "" — with its publish time, in one query.
+// The browse UI aggregates these into module summaries (latest version,
+// version count, last update) and filters them by the viewer's readable
+// namespaces, instead of querying once per module.
+func (db *DB) ListPublishedVersions(ctx context.Context, namespace string) ([]domain.Version, error) {
 	rows, err := db.sql.QueryContext(ctx,
-		`SELECT DISTINCT namespace, name, system FROM versions WHERE status = ? ORDER BY namespace, name, system`,
-		domain.VersionStatusActive)
+		`SELECT namespace, name, system, version, published_at FROM versions
+		 WHERE status = ? AND (? = '' OR namespace = ?)
+		 ORDER BY namespace, name, system`,
+		domain.VersionStatusActive, namespace, namespace)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var out []domain.Module
+	var out []domain.Version
 	for rows.Next() {
-		var m domain.Module
-		if err := rows.Scan(&m.Namespace, &m.Name, &m.System); err != nil {
+		var v domain.Version
+		var publishedAt sql.NullString
+		if err := rows.Scan(&v.Namespace, &v.Name, &v.System, &v.Version, &publishedAt); err != nil {
 			return nil, err
 		}
-		out = append(out, m)
-	}
-	return out, rows.Err()
-}
-
-// ListModulesInNamespace supports the browse UI.
-func (db *DB) ListModulesInNamespace(ctx context.Context, namespace string) ([]domain.Module, error) {
-	rows, err := db.sql.QueryContext(ctx,
-		`SELECT DISTINCT namespace, name, system FROM versions WHERE namespace = ? AND status = ? ORDER BY name, system`,
-		namespace, domain.VersionStatusActive)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var out []domain.Module
-	for rows.Next() {
-		var m domain.Module
-		if err := rows.Scan(&m.Namespace, &m.Name, &m.System); err != nil {
-			return nil, err
+		v.Status = domain.VersionStatusActive
+		if publishedAt.Valid {
+			v.PublishedAt, _ = time.Parse(time.RFC3339, publishedAt.String)
 		}
-		out = append(out, m)
+		out = append(out, v)
 	}
 	return out, rows.Err()
 }

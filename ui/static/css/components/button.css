@@ -6,8 +6,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 40px;
-  padding: 9px 15px;
+  min-height: var(--h-control);
+  padding: 6px 12px;
   border: 1px solid transparent;
   border-radius: var(--radius);
   font-size: 13px;
@@ -24,13 +24,12 @@
   background: var(--brand);
   border-color: var(--brand-border);
   color: var(--on-brand);
-  box-shadow: 0 2px 10px #0003;
 }
 .button.primary:hover {
   background: var(--brand-hover);
 }
 .button.secondary {
-  background: var(--surface-raised);
+  background: var(--surface-1);
   border-color: var(--border-strong);
   color: var(--text-2);
 }
@@ -48,8 +47,8 @@
   background: color-mix(in srgb, var(--danger) 22%, transparent);
 }
 .button.small {
-  min-height: 34px;
-  padding: 5px 12px;
+  min-height: 28px;
+  padding: 4px 10px;
   font-size: 12px;
 }
 .button:disabled, .button[aria-disabled="true"] {
@@ -63,8 +62,8 @@
   display: inline-grid;
   place-items: center;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius);
   background: var(--surface-raised);
   color: var(--text-2);
@@ -75,8 +74,8 @@
   color: var(--text);
 }
 .icon-button .icon {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
 }
 .text-button {
   padding: 10px 0;

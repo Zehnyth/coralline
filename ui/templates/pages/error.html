@@ -8,6 +8,6 @@
   <h1 id="error-title">{{.Heading}}</h1>
   <p>{{.Message}}</p>
   {{if ge .Status 500}}{{with .CorrelationID}}<p class="error-state__ref">Reference: <code>{{.}}</code></p>{{end}}{{end}}
-  <div class="form-actions"><a class="button primary" href="/">Go to home</a><a class="button secondary" href="/modules">Browse modules</a></div>
+  <div class="form-actions"><a class="button primary" href="/">Go to overview</a><a class="button secondary" href="/modules">Browse modules</a></div>
 </section>
 {{end}}
