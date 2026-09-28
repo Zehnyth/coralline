@@ -1,0 +1,12 @@
+{{/* head: tags every full page needs — the app shell (layout.html) and
+     standalone pages (login) both use it. The inline script applies the saved
+     theme and sidebar state before first paint, so neither flashes; with no
+     saved theme the page follows the OS colour scheme. Components load as
+     native ES modules (see static/js/app.js). */}}
+{{define "head"}}<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="{{asset "img/favicon.svg"}}" type="image/svg+xml">
+  <script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("coralline-theme");if(t==="light"||t==="dark")d.setAttribute("data-theme",t);if(localStorage.getItem("coralline-sidebar")==="collapsed")d.setAttribute("data-sidebar","collapsed")}catch(e){}})()</script>
+  <link rel="stylesheet" href="{{asset "css/app.css"}}">
+  <script type="module" src="{{asset "js/app.js"}}"></script>{{end}}

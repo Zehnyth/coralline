@@ -1,0 +1,71 @@
+/* heading — eyebrow, section-heading (+ section-title component),
+   page-heading (+ heading-identity component), and the underline tabs
+   (.page-nav). */
+.eyebrow {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.section-heading, .page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  min-height: 34px;
+  margin-bottom: 22px;
+}
+.section-title h1, .heading-identity h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.section-title p {
+  margin-top: 4px;
+  font-size: 13px;
+}
+.heading-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.heading-identity > div {
+  min-width: 0;
+}
+.heading-identity p {
+  margin-top: 2px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.heading-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.page-nav {
+  display: flex;
+  gap: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.page-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -1px;
+  padding: 0 0 10px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+}
+.page-nav a:hover {
+  color: var(--text);
+}
+.page-nav a[aria-current] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}

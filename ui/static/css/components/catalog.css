@@ -1,0 +1,218 @@
+/* catalog — the search/filter/sort toolbar, the layout toggle, the module
+   list (rows, or cards in the grid layout), and the filtered-result line
+   (static/js/components/catalog.js). .search is also used by the Tokens
+   filter. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.search {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--h-control);
+  padding: 0 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.search:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 1px var(--focus);
+}
+.search .icon {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+}
+.search input:focus-visible {
+  outline: none;
+}
+.search input::placeholder {
+  color: var(--muted);
+}
+.search kbd {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+/* No hardware keyboard, no shortcut hint. */
+@media (hover: none) {
+  .search kbd {
+    display: none;
+  }
+}
+.select-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.view-toggle {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+.view-toggle .icon-button {
+  background: none;
+  color: var(--muted);
+}
+.view-toggle .icon-button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.results-line {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.results-line:empty {
+  display: none;
+}
+
+/* The module list: dense rows by default. */
+.module-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  overflow: hidden;
+}
+.module-row + .module-row {
+  border-top: 1px solid var(--border);
+}
+.module-row__link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 72px 64px;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  outline-offset: -2px;
+}
+.module-row__link:hover {
+  background: var(--surface-hover);
+}
+.module-row__title {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.module-row__name {
+  color: var(--text);
+  font-weight: 500;
+}
+.module-row__ns {
+  color: var(--muted);
+}
+.module-row__version {
+  color: var(--muted);
+  font: 12px var(--mono);
+  text-align: right;
+}
+.module-row__updated {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* The grid layout: the same items as cards. */
+.catalog[data-layout="grid"] .module-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  border: 0;
+  background: none;
+  overflow: visible;
+}
+.catalog[data-layout="grid"] .module-row + .module-row {
+  border-top: 0;
+}
+.catalog[data-layout="grid"] .module-row__link {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "tag version"
+    "title title"
+    "updated updated";
+  gap: 6px 10px;
+  min-height: 116px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+}
+.catalog[data-layout="grid"] .module-row__link:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+.catalog[data-layout="grid"] .provider-tag {
+  grid-area: tag;
+  justify-self: start;
+}
+.catalog[data-layout="grid"] .module-row__version {
+  grid-area: version;
+}
+.catalog[data-layout="grid"] .module-row__title {
+  grid-area: title;
+  white-space: normal;
+}
+.catalog[data-layout="grid"] .module-row__name {
+  display: block;
+  font-size: 15px;
+}
+.catalog[data-layout="grid"] .module-row__updated {
+  grid-area: updated;
+  align-self: end;
+  text-align: left;
+}
+.catalog[data-layout="grid"] .module-row__updated::before {
+  content: "Updated ";
+}
+
+@media (max-width: 700px) {
+  .toolbar .search {
+    flex-basis: 100%;
+  }
+  .toolbar .select-control {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .toolbar .select-control select {
+    flex: 1;
+    min-width: 0;
+  }
+  .module-row__link {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+  .module-row__version, .module-row__updated {
+    text-align: left;
+  }
+  .module-row__updated {
+    grid-column: 2;
+    text-align: right;
+  }
+}

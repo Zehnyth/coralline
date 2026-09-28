@@ -1,0 +1,4 @@
+{{/* provider-tag: a provider system name ("aws", "newrelic", or any other).
+     Its name and tone come from ui/providers.go, which falls back to a
+     readable name and a hashed tone for providers it doesn't list. */}}
+{{define "provider-tag"}}<span class="provider-tag" data-tone="{{providerTone .}}">{{provider .}}</span>{{end}}

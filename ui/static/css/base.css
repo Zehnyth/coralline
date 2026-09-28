@@ -1,0 +1,210 @@
+/* base.css — design tokens, reset, typography, and utilities.
+   Bundled first into css/app.css, followed by layout.css and every
+   components/*.css (see ui/assets.go); pages add css/pages/<page>.css.
+
+   Colours are semantic tokens built with light-dark(). With no saved choice
+   the page follows the OS colour scheme; the theme toggle pins
+   :root[data-theme]. Components use these tokens, never raw colours. The
+   dark theme is a soft charcoal, not black, so surfaces visibly step up. */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces, from the page background up. */
+  --bg: light-dark(#f8f7fb, #17151f);
+  --bg-sidebar: light-dark(#ffffff, #131119);
+  --surface-1: light-dark(#ffffff, #1d1a26);
+  --surface-2: light-dark(#f3f0f7, #25212f);
+  --surface-3: light-dark(#ffffff, #1d1a26);
+  --surface-raised: light-dark(#f3f0f7, #25212f);
+  --surface-hover: light-dark(#efebf5, #282333);
+  --surface-accent: light-dark(#eee8f8, #2c2240);
+  --code-bg: light-dark(#f6f4f9, #131119);
+  --code-title-bg: light-dark(#efecf4, #1d1a26);
+
+  /* Borders. */
+  --border: light-dark(#e7e2ee, #2f2a3a);
+  --border-strong: light-dark(#cfc7da, #403850);
+  --border-accent: light-dark(#8f73ad, #6e4d91);
+
+  /* Text. --muted keeps at least 4.5:1 on every surface above. */
+  --text: light-dark(#1c1726, #f1edf8);
+  --text-2: light-dark(#3a3145, #d3c8e0);
+  --muted: light-dark(#62586f, #a79cb6);
+
+  /* Accent (links, current state) and brand (primary actions). */
+  --accent: light-dark(#5b33b0, #b99bff);
+  --accent-strong: light-dark(#3a1f73, #d2b8ff);
+  --accent-soft: light-dark(#eee8f8, #2c2240);
+  --brand: light-dark(#6842ca, #6d47d1);
+  --brand-hover: light-dark(#532fa8, #7d52de);
+  --brand-border: light-dark(#5a36b8, #7d52de);
+  --on-brand: #ffffff;
+  --focus: light-dark(#5b33b0, #b99bff);
+
+  /* Status. */
+  --success: light-dark(#23604b, #7fd1b6);
+  --success-bg: light-dark(#dcebe4, #1a2e26);
+  --success-border: light-dark(#a3c6b8, #2c5244);
+  --live: light-dark(#2e8f70, #75cbb0);
+  --warning: light-dark(#7a4518, #f0c09c);
+  --warning-bg: light-dark(#f6e9dc, #33261a);
+  --danger: light-dark(#a8322d, #f0aaaa);
+  --danger-bg: light-dark(#f8e3e1, #351d20);
+
+  /* Tones: provider tags and namespace avatars (tone-N from the provider
+     table or a name hash, so a name always gets the same colour). */
+  --tone-0: light-dark(#8a5519, #e8ac64);
+  --tone-1: light-dark(#234478, #80acef);
+  --tone-2: light-dark(#1f6682, #6cc3e4);
+  --tone-3: light-dark(#2d6a3e, #86d3a0);
+  --tone-4: light-dark(#993556, #f095bd);
+  --tone-5: light-dark(#5b33b0, #b99bff);
+  --tone-6: light-dark(#993c1d, #f2a083);
+  --tone-7: light-dark(#0f6e56, #62cfa9);
+  --tone-n: light-dark(#524c5c, #bdb6c9);
+
+  /* Type, shape, motion. */
+  --sans: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --radius-sm: 5px;
+  --radius: 7px;
+  --radius-lg: 12px;
+  --h-control: 32px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --shadow: 0 12px 32px light-dark(#1c172624, #0007);
+
+  --sidebar-rail: 56px;
+  --sidebar-panel: 248px;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+a, button, input, select, textarea, [tabindex] {
+  outline-offset: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+}
+h1, h2, h3, p {
+  margin: 0;
+}
+h1, h2, h3 {
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
+}
+h1 {
+  font-size: 22px;
+}
+h2 {
+  font-size: 16px;
+}
+h3 {
+  font-size: 14px;
+}
+p {
+  color: var(--muted);
+}
+ul[role="list"], ol[role="list"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+[hidden] {
+  display: none !important;
+}
+
+.icon {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+.muted {
+  color: var(--muted);
+}
+.mono, code, pre, kbd {
+  font-family: var(--mono);
+}
+.text-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+.text-link:hover {
+  text-decoration-color: currentColor;
+}
+.stack > * + * {
+  margin-top: 24px;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: -60px;
+  left: 20px;
+  z-index: 99;
+  padding: 10px 20px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,8 @@
+{{/* namespace: namespacePage. The breadcrumb says this is a namespace, so
+     the heading is just its avatar, name, and module count. */}}
+{{define "title"}}{{.Namespace}} · Coralline{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Namespaces" "/namespaces")}}
+<div class="page-heading">{{template "heading-identity" dict "Initial" (initial .Namespace) "Tone" (tone .Namespace) "Title" .Namespace "Count" (printf "%d" .Catalog.Total)}}</div>
+{{template "module-catalog" .Catalog}}
+{{end}}

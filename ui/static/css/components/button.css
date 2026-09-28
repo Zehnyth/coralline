@@ -1,0 +1,92 @@
+/* button — .button (.primary | .secondary | .danger, .small), .icon-button,
+   .text-button, .full-width. Busy/disabled state comes from the
+   submit-once component. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--h-control);
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.button .icon {
+  width: 16px;
+  height: 16px;
+}
+.button.primary {
+  background: var(--brand);
+  border-color: var(--brand-border);
+  color: var(--on-brand);
+}
+.button.primary:hover {
+  background: var(--brand-hover);
+}
+.button.secondary {
+  background: var(--surface-1);
+  border-color: var(--border-strong);
+  color: var(--text-2);
+}
+.button.secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-accent);
+  color: var(--text);
+}
+.button.danger {
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+.button.danger:hover {
+  background: color-mix(in srgb, var(--danger) 22%, transparent);
+}
+.button.small {
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.button:disabled, .button[aria-disabled="true"] {
+  opacity: .6;
+  cursor: progress;
+}
+.full-width {
+  width: 100%;
+}
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--text-2);
+  transition: background .15s, color .15s;
+}
+.icon-button:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.icon-button .icon {
+  width: 17px;
+  height: 17px;
+}
+.text-button {
+  padding: 10px 0;
+  color: var(--accent);
+  font-size: 13px;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+.text-button:hover {
+  color: var(--accent-strong);
+  text-decoration-color: currentColor;
+}

@@ -1,0 +1,66 @@
+/* card — card grids (namespaces) and the namespace-card component. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card-item {
+  display: flex;
+  min-width: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color .15s, background .15s;
+}
+.card:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 550;
+}
+.card-subtitle {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.provider-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 12px;
+}
+.provider-tags:empty {
+  display: none;
+}
+.card-arrow {
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.card-arrow .icon {
+  width: 16px;
+  height: 16px;
+}
+.card:hover .card-arrow, .card:focus-visible .card-arrow {
+  opacity: 1;
+}

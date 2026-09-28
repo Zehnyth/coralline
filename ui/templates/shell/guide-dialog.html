@@ -1,0 +1,17 @@
+{{/* guide-dialog: basePage. The getting-started guide, opened by any
+     guide-trigger button on the page. */}}
+{{define "guide-dialog"}}<dialog class="guide-dialog" id="guide-dialog" data-component="guide-dialog" aria-labelledby="guide-title">
+  <div class="dialog-head"><span class="dialog-kicker">From module to registry</span><button type="button" class="icon-button" data-part="close" aria-label="Close publish guide">{{icon "close"}}</button></div>
+  <h2 id="guide-title">Publish guide</h2>
+  <p class="muted">Run these commands on your registry host. Set <code>CORALLINE_ADMIN_CREDENTIAL</code> to the admin token printed on first boot.</p>
+  <ol class="guide-steps">
+    <li><strong>Create a namespace</strong><pre><code>coralline namespace create platform</code></pre></li>
+    <li><strong>Mint a scoped token</strong><pre><code>coralline token create --name ci-publisher --namespace platform --role publisher</code></pre><p>Save the token shown once as <code>CORALLINE_TOKEN</code>.</p></li>
+    <li><strong>Package and publish</strong><pre><code>tar -czf module.tar.gz *.tf
+curl --fail --request PUT \
+  --header "Authorization: Bearer $CORALLINE_TOKEN" \
+  --data-binary @module.tar.gz \
+  "https://{{.Host}}/v1/modules/platform/network/aws/1.0.0/publish"</code></pre><p>This example uses a POSIX shell. Use a certificate your client trusts.</p></li>
+  </ol>
+  <div class="callout">Already published? Open a module to copy its source and pinned version into your Terraform configuration.</div>
+</dialog>{{end}}

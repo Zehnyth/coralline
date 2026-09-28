@@ -1,0 +1,70 @@
+/* dialog — modal dialogs (the getting-started guide). */
+dialog {
+  width: min(650px, calc(100% - 32px));
+  max-height: 85vh;
+  padding: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: var(--surface-1);
+  color: var(--text);
+  box-shadow: 0 24px 64px #0006;
+}
+dialog::backdrop {
+  background: light-dark(#1c172659, #08060e99);
+  backdrop-filter: blur(2px);
+}
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+dialog h2 {
+  margin-bottom: 14px;
+  font-size: 20px;
+}
+dialog p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+dialog code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.guide-steps {
+  margin: 24px 0;
+  padding-left: 22px;
+}
+.guide-steps li {
+  margin: 18px 0;
+  padding-left: 8px;
+  color: var(--text-2);
+}
+.guide-steps li strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.guide-steps pre {
+  margin: 10px 0;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--code-bg);
+}
+.guide-steps p {
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  dialog {
+    padding: 22px 18px;
+  }
+  dialog h2 {
+    font-size: 22px;
+  }
+}
+.dialog-kicker {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}

@@ -1,0 +1,7 @@
+{{/* topbar: basePage. Only shown at 700px and below, where the sidebar is an
+     off-canvas drawer: it holds the drawer trigger and the wordmark. On
+     wider screens the sidebar carries everything, so there is no topbar. */}}
+{{define "topbar"}}<header class="mobile-bar">
+  <button class="icon-button" type="button" data-component="sidebar-trigger" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">{{icon "menu"}}</button>
+  <a class="wordmark" href="/">Coralline</a>
+</header>{{end}}

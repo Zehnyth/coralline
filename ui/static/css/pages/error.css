@@ -1,0 +1,20 @@
+/* error.css — the styled 404/500 page inside the app shell. */
+.error-state {
+  max-width: 560px;
+  margin: 48px auto;
+  text-align: center;
+}
+.error-state h1 {
+  margin: 10px 0 12px;
+}
+.error-state p {
+  font-size: 14px;
+}
+.error-state__ref {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.error-state .form-actions {
+  justify-content: center;
+  margin-top: 26px;
+}

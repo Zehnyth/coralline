@@ -1,0 +1,21 @@
+# Runtime state — never bake local SQLite files, blobs, or dev certs into an image.
+data/
+
+# Local build output.
+bin/
+*.exe
+*.exe~
+*.test
+
+# VCS and editor metadata.
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Docs — not needed at build time, keeps the context small.
+*.md
+
+# Local-only config overrides.
+config/coralline.yml
+.env

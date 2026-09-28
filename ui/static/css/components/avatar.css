@@ -1,0 +1,38 @@
+/* avatar — the module symbol and the namespace initial. A namespace's tone
+   (tone-0..7 from the `tone` template func) comes from its name, so it keeps
+   its colour everywhere. .large is the page-heading size. */
+.module-symbol, .namespace-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+.module-symbol {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.module-symbol .icon {
+  width: 16px;
+  height: 16px;
+}
+.namespace-avatar {
+  font-size: 14px;
+  font-weight: 600;
+}
+.tone-0 { color: var(--tone-0); }
+.tone-1 { color: var(--tone-1); }
+.tone-2 { color: var(--tone-2); }
+.tone-3 { color: var(--tone-3); }
+.tone-4 { color: var(--tone-4); }
+.tone-5 { color: var(--tone-5); }
+.tone-6 { color: var(--tone-6); }
+.tone-7 { color: var(--tone-7); }
+.module-symbol.large, .namespace-avatar.large {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  font-size: 16px;
+}

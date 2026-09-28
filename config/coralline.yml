@@ -1,0 +1,123 @@
+# =============================================================================
+# Coralline configuration
+# =============================================================================
+#
+# `coralline serve` reads this file by default. To use a different file:
+#
+#     coralline serve --config /path/to/coralline.yml
+#
+# Every setting below is active and set to its built-in default, so edit a
+# value to change it. Settings that are commented out (#) are not used by
+# the current build yet; they're listed so you know they're coming. If this
+# file is missing, Coralline runs on the same defaults.
+#
+# Relative paths (such as ./data/...) are resolved from the directory you
+# start Coralline in.
+#
+# Changes take effect when the server restarts.
+
+
+# -----------------------------------------------------------------------------
+# Network
+# -----------------------------------------------------------------------------
+
+# Address and port the public server listens on. It serves the Terraform
+# registry protocol, the web UI, and sign-in.
+#   ":8443"          = all network interfaces, port 8443
+#   "127.0.0.1:8443" = this machine only
+listen: ":8443"
+
+# Address of the admin API that the `coralline namespace`, `token`, and
+# `admin` CLI commands talk to. Keep this on a loopback address
+# (127.0.0.1 or ::1): anyone who can reach it with an admin token can create
+# namespaces and admin tokens. Never expose it publicly.
+admin_internal_addr: "127.0.0.1:8444"
+
+
+# -----------------------------------------------------------------------------
+# Storage: where module archives (.tar.gz files) are kept
+# -----------------------------------------------------------------------------
+
+storage:
+  # Folder that holds the uploaded module archives. It is created if it
+  # doesn't exist. Back it up together with index.path below.
+  path: ./data/blobs
+
+  # Storage type. Not used by the current build: archives are always kept
+  # on the local filesystem at `path` above. Other backends (such as S3)
+  # will be selected here once they exist.
+  # backend: filesystem
+
+
+# -----------------------------------------------------------------------------
+# Index: the database of namespaces, versions, and tokens
+# -----------------------------------------------------------------------------
+
+index:
+  # SQLite database file. It is created and upgraded automatically.
+  # Don't delete it to "reset" an upgrade: it holds every token and version.
+  path: ./data/index.db
+
+
+# -----------------------------------------------------------------------------
+# Authentication
+# -----------------------------------------------------------------------------
+
+auth:
+  # true  = the web UI requires signing in with a token, and Terraform needs
+  #         a token to list or download modules.
+  # false = anyone who can reach the server can browse and download modules.
+  # Publishing always needs a token either way.
+  require_login: true
+
+  # IP addresses of reverse proxies (nginx, a load balancer, ...) that sit
+  # in front of Coralline. Only for requests arriving from these exact
+  # addresses does Coralline trust the X-Forwarded-For header to find the
+  # real client IP, which the sign-in rate limit is based on. Leave it empty
+  # if clients connect to Coralline directly.
+  # Example: trusted_proxies: ["10.0.0.5", "10.0.0.6"]
+  trusted_proxies: []
+
+
+# -----------------------------------------------------------------------------
+# Limits
+# -----------------------------------------------------------------------------
+
+limits:
+  # Largest module archive that can be published, in bytes. Larger uploads
+  # are rejected with "413 archive too large". Must be greater than 0.
+  # 104857600 bytes = 100 MB.
+  max_upload_bytes: 104857600
+
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+
+log:
+  # How much detail to log (JSON lines on standard output), from most to
+  # least: debug, info, warn, error. An unrecognized value falls back to
+  # info.
+  level: info
+
+
+# -----------------------------------------------------------------------------
+# TLS (HTTPS)
+# -----------------------------------------------------------------------------
+#
+# Terraform only talks to registries over HTTPS, and it can't be told to
+# accept an untrusted certificate. The paths below are where Coralline
+# creates a self-signed certificate, which is fine for trying it out on one
+# machine. For real use, point cert_file/key_file at a certificate your
+# clients trust, or put a reverse proxy that handles HTTPS in front of
+# Coralline.
+
+tls:
+  # Certificate and private key in PEM format. If the files don't exist yet,
+  # a self-signed pair is generated at these paths.
+  cert_file: ./data/tls/dev-cert.pem
+  key_file: ./data/tls/dev-key.pem
+
+  # true = serve plain HTTP. Use it only for local testing, or behind a
+  # reverse proxy that already handles HTTPS.
+  disabled: false

@@ -1,0 +1,67 @@
+{{/* token_detail: tokenDetailPage. */}}
+{{define "title"}}{{.Token.Name}} · Tokens · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Tokens" "/tokens")}}
+<div class="page-heading">
+  <div class="heading-identity"><div>
+    <h1>{{.Token.Name}} <span class="heading-meta">{{template "token-status" .Token}}{{template "token-kind" .Token}}</span></h1>
+    <p class="token-id-line"><code id="token-id">{{.Token.ID}}</code>{{template "copy-button" dict "Target" "token-id" "Label" "" "Message" "Token id copied to clipboard" "Inline" true "Aria" "Copy token id"}}</p>
+  </div></div>
+</div>
+{{template "alerts" dict "Notice" .Notice "Error" .Error}}
+<div class="token-detail-grid">
+  <div class="stack">
+    <section class="panel" aria-labelledby="access-title">
+      <div class="panel-heading"><div><h2 id="access-title">Access</h2><p>{{if .Token.IsAdmin}}Admin tokens hold every permission by kind and can't be narrowed.{{else if .GrantsEditable}}Per namespace. Changes apply to the token's next request.{{else if eq .Token.Status "expired"}}This token has expired, so its access can't be changed.{{else}}This token has been revoked, so its access can't be changed.{{end}}</p></div></div>
+      {{if .GrantsEditable}}
+      <form method="post" action="/tokens/{{.Token.ID}}/grants" data-component="submit-once">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        <div class="access-list">{{range .Access}}
+          <div class="access-row">
+            <span class="access-row__label">{{.Label}}{{if .Custom}}<span class="access-row__custom">{{range .Custom}}<span class="chip">{{.}}</span>{{end}}</span>{{end}}</span>
+            <span class="segmented" role="radiogroup" aria-label="Access on {{.Label}}">
+              {{$row := .}}{{range $level := (list "none" "read" "publish")}}<label class="segmented__option"><input type="radio" name="access:{{$row.Namespace}}" value="{{$level}}"{{if eq $row.Level $level}} checked{{end}}>{{capitalize $level}}</label>{{end}}{{if .Custom}}<label class="segmented__option"><input type="radio" name="access:{{.Namespace}}" value="custom"{{if eq .Level "custom"}} checked{{end}}>Custom</label>{{end}}
+            </span>
+          </div>{{end}}
+        </div>
+        <div class="form-actions"><button class="button primary small" type="submit">Save access</button></div>
+      </form>
+      {{else}}{{template "grant-list" .Token}}{{end}}
+    </section>
+    <section class="panel" aria-labelledby="tags-title">
+      <div class="panel-heading"><div><h2 id="tags-title">Tags</h2><p>Labels for ownership and offboarding. Tags never grant access.</p></div></div>
+      {{if .TagsEditable}}
+      <form method="post" action="/tokens/{{.Token.ID}}/tags" data-component="submit-once">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        {{template "tag-editor" dict "ID" "token-tags" "Text" .TagsText}}
+        <div class="form-actions"><button class="button secondary small" type="submit">Save tags</button></div>
+      </form>
+      {{else}}{{template "tag-chips" .Token.Tags}}{{end}}
+    </section>
+  </div>
+  <aside class="stack" aria-label="Token details">
+    <section class="panel">
+      <dl class="meta-list">
+        <dt>Created</dt><dd>{{.Token.CreatedAt}}</dd>
+        <dt>Created by</dt><dd>{{.Token.CreatedBy}}</dd>
+        <dt>Last used</dt><dd title="{{.Token.LastUsed}}">{{.Token.LastUsedAgo}}</dd>
+        <dt>Expires</dt><dd title="{{.Token.Expires}}">{{.Token.ExpiresLabel}}</dd>
+        {{if .Token.RevokedAt}}<dt>Revoked</dt><dd>{{.Token.RevokedAt}}</dd>{{end}}
+      </dl>
+    </section>
+    {{if .Revocable}}
+    <section class="panel danger-zone" id="revoke" aria-labelledby="revoke-title">
+      <h2 id="revoke-title">Revoke token</h2>
+      <p class="danger-zone__text">Revocation is immediate and permanent. Sessions signed in with this token end on their next request.</p>
+      <form method="post" action="/tokens/{{.Token.ID}}/revoke" data-component="confirm-form submit-once" data-confirm="Revoke {{.Token.Name}}? This can't be undone.">
+        <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+        <button class="button danger full-width" type="submit">Revoke token</button>
+      </form>
+    </section>
+    {{else if .Token.IsAdmin}}
+    <div class="callout">Admin tokens are managed from the CLI on the registry host: <code>coralline admin rotate</code>.</div>
+    {{end}}
+  </aside>
+</div>
+{{end}}

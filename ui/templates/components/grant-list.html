@@ -1,0 +1,2 @@
+{{/* grant-list: tokenRow — admin tokens hold every permission by kind, not by grant. */}}
+{{define "grant-list"}}{{if .IsAdmin}}<span class="cell-muted">Full access</span>{{else if .Grants}}<ul class="grant-list" role="list">{{range .Grants}}<li><span class="grant-ns">{{if eq .Namespace "*"}}all namespaces{{else}}{{.Namespace}}{{end}}</span> · {{.Permission}}</li>{{end}}</ul>{{else}}<span class="cell-muted">No grants</span>{{end}}{{end}}

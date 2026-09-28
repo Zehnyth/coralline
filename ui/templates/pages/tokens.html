@@ -1,0 +1,44 @@
+{{/* tokens: tokensPage. Search and the status filter run in the browser
+     through the catalog component; each row's ⋯ menu repeats the actions
+     from the token's own page. */}}
+{{define "title"}}Tokens · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+<div class="section-heading">
+  {{template "section-title" dict "Title" "Tokens" "Count" (printf "%d" (len .Tokens))}}
+  <a class="button primary" href="/tokens/new">{{icon "plus"}} New token</a>
+</div>
+{{template "alerts" dict "Notice" .Notice "Error" .Error}}
+{{if .Tokens}}
+<section class="catalog" data-component="catalog" data-singular="{{.Catalog.Singular}}" data-plural="{{.Catalog.Plural}}" aria-label="Tokens">
+  <div class="toolbar" role="search" aria-label="Filter tokens">
+    <div class="segmented" role="radiogroup" aria-label="Status" data-part="facet" data-facet="status">{{range .StatusTabs}}<label class="segmented__option"><input type="radio" name="status" value="{{.Value}}"{{if eq .Value ""}} checked{{end}}>{{.Label}}<span class="segmented__count">{{.Count}}</span></label>{{end}}</div>
+    <label class="search">{{icon "search"}}<span class="visually-hidden">Search tokens</span><input type="search" data-part="search" placeholder="{{.Catalog.Placeholder}}" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></label>
+  </div>
+  <div class="token-table" role="region" aria-label="Tokens">
+    <table class="data-table">
+      <thead><tr><th scope="col">Token</th><th scope="col">Access</th><th scope="col">Last used</th><th scope="col">Expires</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+      <tbody data-part="items">
+      {{range .Tokens}}
+        <tr data-item data-name="{{.Name}}" data-search="{{.SearchText}}" data-status="{{.Filter}}"{{if ne .Status "active"}} class="is-inactive"{{end}}>
+          <th scope="row">
+            <div class="token-cell">
+              <span class="token-kind{{if .IsAdmin}} token-kind--admin{{end}}" title="{{if .IsAdmin}}Admin token{{else}}Standard token{{end}}">{{if .IsAdmin}}{{icon "admin"}}{{else}}{{icon "key"}}{{end}}</span>
+              <span class="token-cell__main"><a class="token-name" href="/tokens/{{.ID}}">{{.Name}}</a>{{if ne .Status "active"}} {{template "token-status" .}}{{end}}{{if .Tags}}<span class="token-tags">{{range .Tags}}<span class="chip">{{.Key}}={{.Value}}</span>{{end}}</span>{{end}}</span>
+            </div>
+          </th>
+          <td><span class="chip-list">{{range .Access}}<span class="chip{{if .Accent}} chip--accent{{end}}">{{.Label}}</span>{{else}}<span class="cell-muted">No access</span>{{end}}</span></td>
+          <td class="{{if .Stale}}cell-warning{{else}}cell-muted{{end}}" title="{{.LastUsed}}">{{.LastUsedAgo}}</td>
+          <td class="{{if .ExpiresSoon}}cell-warning{{else}}cell-muted{{end}}" title="{{.Expires}}">{{.ExpiresLabel}}</td>
+          <td class="cell-actions">{{template "token-menu" .}}</td>
+        </tr>
+      {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{template "catalog-status" .Catalog}}
+</section>
+{{else}}
+{{template "empty-state" dict "Icon" "key" "Title" "No tokens yet" "Body" "Mint a scoped token for a person or a CI pipeline." "Action" "New token" "Href" "/tokens/new"}}
+{{end}}
+{{end}}

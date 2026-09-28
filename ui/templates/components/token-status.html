@@ -1,0 +1,2 @@
+{{/* token-status: tokenRow. */}}
+{{define "token-status"}}{{if eq .Status "revoked"}}<span class="badge badge--muted">Revoked</span>{{else if eq .Status "expired"}}<span class="badge badge--muted">Expired</span>{{else if .ExpiresSoon}}<span class="badge badge--warning">Expiring soon</span>{{else}}<span class="badge badge--success">Active</span>{{end}}{{end}}

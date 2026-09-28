@@ -1,0 +1,5 @@
+{{/* empty-state: dict Icon (optional), Title, Body (optional), and an
+     optional link: Action (its label) and Href (plus Secondary=true for a
+     secondary button). There is deliberately no "open the guide" action:
+     the sidebar's Publish guide is its one entry point. */}}
+{{define "empty-state"}}<div class="empty-state">{{with .Icon}}<span class="empty-state__icon" aria-hidden="true">{{icon .}}</span>{{end}}<h2 class="empty-state__title">{{.Title}}</h2>{{with .Body}}<p>{{.}}</p>{{end}}{{if .Action}}<a class="button {{if .Secondary}}secondary{{else}}primary{{end}}" href="{{.Href}}">{{.Action}}</a>{{end}}</div>{{end}}

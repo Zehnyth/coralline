@@ -1,0 +1,9 @@
+{{/* module-catalog: moduleCatalog. The searchable module list shared by
+     /modules and /n/{ns}; shows its empty state when there are no modules.
+     The empty state has no button: the sidebar's Publish guide is the one
+     way to open the guide. */}}
+{{define "module-catalog"}}<section class="catalog" data-component="catalog" data-singular="{{.Singular}}" data-plural="{{.Plural}}" aria-label="Modules">
+  {{if .Modules}}{{template "catalog-toolbar" .}}
+  <ul class="module-list" data-part="items" role="list">{{range .Modules}}{{template "module-row" dict "Module" . "ShowNamespace" $.ShowNamespace}}{{end}}</ul>
+  {{template "catalog-status" .}}{{else}}{{template "empty-state" dict "Icon" "cube" "Title" .EmptyTitle "Body" .EmptyBody}}{{end}}
+</section>{{end}}

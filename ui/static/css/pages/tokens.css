@@ -1,0 +1,308 @@
+/* tokens.css — the admin-only Tokens section: list (with the row menu),
+   create, reveal, and detail pages. */
+
+/* List. */
+.token-table {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+}
+.token-table .data-table thead th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+.token-table .data-table thead th:last-child {
+  border-top-right-radius: var(--radius-lg);
+}
+.data-table tr.is-inactive > * {
+  color: var(--muted);
+}
+.data-table tr.is-inactive .token-cell__main, .data-table tr.is-inactive .chip-list {
+  opacity: .7;
+}
+.token-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.token-kind {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.token-kind .icon {
+  width: 15px;
+  height: 15px;
+}
+.token-kind--admin {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.token-cell__main {
+  min-width: 0;
+}
+.token-name {
+  color: var(--text);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+a.token-name:hover {
+  color: var(--accent);
+}
+.token-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.token-tags .chip {
+  color: var(--muted);
+}
+.cell-muted {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cell-warning {
+  color: var(--warning);
+  white-space: nowrap;
+}
+.cell-actions {
+  width: 44px;
+  text-align: right;
+}
+.grant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-2);
+  font: 12px var(--mono);
+}
+.grant-list .grant-ns {
+  color: var(--muted);
+}
+
+/* Row menu (row-menu component). */
+.row-menu {
+  position: relative;
+  display: inline-block;
+}
+.row-menu summary {
+  list-style: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+}
+.row-menu summary::-webkit-details-marker {
+  display: none;
+}
+tr:hover .row-menu summary, .row-menu summary:focus-visible, .row-menu[open] summary {
+  opacity: 1;
+}
+@media (hover: none) {
+  .row-menu summary {
+    opacity: 1;
+  }
+}
+.row-menu__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--surface-1);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+.row-menu__list a, .row-menu__list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.row-menu__list a:hover, .row-menu__list button:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.row-menu__list .icon {
+  width: 15px;
+  height: 15px;
+}
+.row-menu__list .row-menu__danger {
+  color: var(--danger);
+}
+
+/* Detail. */
+.token-id-line {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+.token-id-line code {
+  color: var(--muted);
+  font-size: 12px;
+}
+.token-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 20px;
+}
+.token-detail-grid > * {
+  min-width: 0;
+}
+.access-list {
+  margin-bottom: 14px;
+}
+.access-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+.access-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.access-row__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+.access-row__custom {
+  display: inline-flex;
+  gap: 4px;
+}
+.danger-zone {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+}
+.danger-zone h2 {
+  color: var(--danger);
+}
+.danger-zone__text {
+  margin: 4px 0 14px;
+  font-size: 13px;
+}
+
+/* Create. */
+.token-form {
+  max-width: 820px;
+}
+.custom-permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.custom-expiry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.custom-expiry .input {
+  width: 110px;
+}
+
+/* Reveal. */
+.secret-reveal {
+  max-width: 720px;
+}
+.secret {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+}
+.secret code {
+  min-width: 0;
+  color: var(--text);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.secret-reveal__use {
+  margin: 22px 0 4px;
+}
+.snippet {
+  margin-top: 12px;
+}
+.snippet p {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.snippet pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .token-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  /* Each token row becomes a stacked card. */
+  .token-table .data-table thead {
+    display: none;
+  }
+  .token-table .data-table, .token-table .data-table tbody, .token-table .data-table tr,
+  .token-table .data-table th, .token-table .data-table td {
+    display: block;
+    width: 100%;
+  }
+  .token-table .data-table tr {
+    position: relative;
+    padding: 12px 14px;
+  }
+  .token-table .data-table tbody tr + tr > * {
+    border-top: 0;
+  }
+  .token-table .data-table tbody tr + tr {
+    border-top: 1px solid var(--border);
+  }
+  .token-table .data-table th, .token-table .data-table td {
+    padding: 3px 0 3px 38px;
+  }
+  .token-table .data-table th {
+    padding-left: 0;
+  }
+  .token-table .cell-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: auto;
+    padding: 0;
+  }
+}

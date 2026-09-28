@@ -1,0 +1,31 @@
+{{/* login: LoginPage. A standalone page without the app shell, so nothing
+     about the registry's structure is rendered before the viewer has
+     authenticated. */}}
+{{define "login"}}<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{template "head" .}}
+  <title>Sign in · Coralline</title>
+  <link rel="stylesheet" href="{{asset "css/pages/login.css"}}">
+</head>
+<body>
+  <main class="login-shell" id="main">
+    <section class="panel login-card" aria-labelledby="login-title">
+      <span class="wordmark">Coralline</span>
+      <h1 id="login-title">Sign in</h1>
+      <p class="login-intro">Paste your registry token to continue. It's checked once and never kept in your browser; a session cookie is used instead.</p>
+      {{template "alerts" dict "Error" .Error}}
+      <form method="post" action="/login" data-component="submit-once">
+        <input type="hidden" name="next" value="{{.Next}}">
+        <div class="field">
+          <label for="login-token">Token</label>
+          <input class="input" id="login-token" name="token" type="password" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="crl_pat_…" autofocus>
+        </div>
+        <button class="button primary full-width" type="submit">Sign in</button>
+      </form>
+      <p class="login-foot">No token yet? Your registry admin issues them.</p>
+    </section>
+  </main>
+</body>
+</html>
+{{end}}

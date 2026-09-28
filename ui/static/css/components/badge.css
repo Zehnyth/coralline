@@ -1,0 +1,109 @@
+/* badge — .count, .badge (--success | --warning | --danger | --accent |
+   --muted), provider tags, tag chips, and the small status dots. */
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.badge--success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.badge--warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+.badge--danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.badge--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.badge--muted {
+  color: var(--muted);
+}
+
+/* provider-tag: a hairline tag in the provider's tone. data-tone is 0..7
+   or n (neutral); see ui/providers.go. */
+.provider-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  color: var(--tone-n);
+  font-size: 11px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.provider-tag[data-tone="0"] { color: var(--tone-0); }
+.provider-tag[data-tone="1"] { color: var(--tone-1); }
+.provider-tag[data-tone="2"] { color: var(--tone-2); }
+.provider-tag[data-tone="3"] { color: var(--tone-3); }
+.provider-tag[data-tone="4"] { color: var(--tone-4); }
+.provider-tag[data-tone="5"] { color: var(--tone-5); }
+.provider-tag[data-tone="6"] { color: var(--tone-6); }
+.provider-tag[data-tone="7"] { color: var(--tone-7); }
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font: 11px/19px var(--mono);
+  overflow-wrap: anywhere;
+}
+.chip--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.chip b {
+  font-weight: 600;
+  color: var(--text);
+}
+.status-dot, .active-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--live);
+}

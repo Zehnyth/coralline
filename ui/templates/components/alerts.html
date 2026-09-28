@@ -1,0 +1,2 @@
+{{/* alerts: dict Notice, Error (both optional). */}}
+{{define "alerts"}}{{with .Notice}}<div class="alert alert--success" role="status">{{.}}</div>{{end}}{{with .Error}}<div class="alert alert--error" role="alert">{{.}}</div>{{end}}{{end}}

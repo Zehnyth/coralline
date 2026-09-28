@@ -1,0 +1,11 @@
+{{/* namespaces: namespacesPage. The overview owns registry-wide stats, so
+     this page is just the searchable namespace grid. */}}
+{{define "title"}}Namespaces · Coralline{{end}}
+{{define "content"}}
+<div class="section-heading">{{template "section-title" dict "Title" "Namespaces" "Count" (printf "%d" (len .Namespaces))}}</div>
+<section class="catalog" data-component="catalog" data-singular="{{.Catalog.Singular}}" data-plural="{{.Catalog.Plural}}" aria-label="Namespaces">
+  {{if .Namespaces}}{{template "catalog-toolbar" .Catalog}}
+  <ul class="card-grid" data-part="items" role="list">{{range .Namespaces}}{{template "namespace-card" .}}{{end}}</ul>
+  {{template "catalog-status" .Catalog}}{{else}}{{template "empty-state" dict "Icon" "folders" "Title" "Your registry starts here" "Body" "Create a namespace, then publish your first module. The Publish guide in the sidebar walks through it."}}{{end}}
+</section>
+{{end}}

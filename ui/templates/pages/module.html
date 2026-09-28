@@ -1,0 +1,41 @@
+{{/* module: modulePage. Each fact appears once: the breadcrumb says where the
+     module lives, the heading says what it is, the version lives in the
+     selector (the only way to pick one), and the source only in the
+     snippet. */}}
+{{define "title"}}{{.Namespace}}/{{.Name}} · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/module.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Namespaces" "/namespaces" .Namespace (printf "/n/%s" .Namespace))}}
+<div class="page-heading"><div class="heading-identity"><h1>{{.Name}} {{template "provider-tag" .System}}</h1></div></div>
+<div class="detail-grid">
+  <div class="stack">
+    <section id="usage" aria-labelledby="usage-title">
+      <div class="usage-head">
+        <h2 id="usage-title">Add to your configuration</h2>
+        <form class="version-form" method="get" action="#usage" data-component="auto-submit">
+          {{template "version-label" .}}
+          <label class="visually-hidden" for="version">Module version</label>
+          <select id="version" name="version">{{range .Versions}}<option value="{{.Version}}"{{if eq .Version $.SelectedVersion}} selected{{end}}>{{.Version}}</option>{{end}}</select>
+          <button class="button secondary small" type="submit" data-part="submit">Use version</button>
+        </form>
+      </div>
+      {{template "code-block" dict "Title" "main.tf" "ID" "usage-code" "Code" .Snippet "CopyLabel" "Copy" "CopyMessage" "Configuration copied to clipboard"}}
+      <div class="usage-actions">
+        <code id="source-address" hidden>{{.Source}}</code>
+        {{template "copy-button" dict "Target" "source-address" "Label" "Copy source only" "Message" "Module source copied to clipboard"}}
+        <p class="usage-note">Then run <code>terraform init</code> or <code>tofu init</code>.</p>
+      </div>
+    </section>
+  </div>
+  <aside class="stack" aria-label="Module details">
+    <section class="panel">
+      <dl class="meta-list">{{if .Publisher}}<dt>Published by</dt><dd>{{.Publisher}}</dd>{{end}}<dt>Published</dt><dd title="{{date .SelectedPublishedAt}}">{{ago .SelectedPublishedAt}}</dd><dt>Versions</dt><dd>{{len .Versions}}</dd></dl>
+      <p class="detail-note">{{icon "lock"}} Versions are immutable, so a pinned version always gets the same code.</p>
+    </section>
+  </aside>
+</div>
+{{end}}
+
+{{/* version-label: modulePage. The selected version's label, shown once
+     beside the selector. */}}
+{{define "version-label"}}{{if eq .SelectedVersion .LatestVersion}}{{if .LatestIsStable}}<span class="badge badge--success">Recommended</span>{{else}}<span class="badge badge--accent">Latest</span>{{end}}{{else}}{{range .Versions}}{{if and (eq .Version $.SelectedVersion) .Prerelease}}<span class="badge badge--warning">Pre-release</span>{{end}}{{end}}{{end}}{{end}}

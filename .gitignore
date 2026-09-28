@@ -6,7 +6,11 @@
 *.exe~
 *.dll
 *.so
+data
+scripts
 *.dylib
+bin
+terraform-modules/*
 
 # Test binary, built with `go test -c`
 *.test

@@ -1,0 +1,55 @@
+{{/* token_new: tokenFormPage. The submission key makes a double click or a
+     resubmitted form land on the first result instead of minting again. */}}
+{{define "title"}}New token · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/tokens.css"}}">{{end}}
+{{define "content"}}
+{{template "breadcrumbs" (crumbs "Tokens" "/tokens")}}
+<div class="section-heading">{{template "section-title" dict "Title" "New token"}}</div>
+{{template "alerts" dict "Error" .Error}}
+<form class="panel token-form" method="post" action="/tokens" data-component="token-form submit-once">
+  <input type="hidden" name="_csrf" value="{{.Viewer.CSRF}}">
+  <input type="hidden" name="_submission" value="{{.Form.Submission}}">
+  <div class="form-section">
+    <div class="form-section__label"><label for="token-name">Name</label><span>Who or what uses it. Shown in audit logs.</span></div>
+    <div class="form-section__body"><input class="input" id="token-name" name="name" value="{{.Form.Name}}" required maxlength="64" autocomplete="off" placeholder="ci-publisher"></div>
+  </div>
+  <fieldset class="form-section">
+    <legend class="form-section__label">Access<span>Standard tokens read or publish modules. Admin tokens are created from the CLI.</span></legend>
+    <div class="form-section__body">
+      <div class="segmented" role="radiogroup" aria-label="Access">{{range .Roles}}<label class="segmented__option"><input type="radio" name="role" value="{{.Value}}" data-part="role"{{if eq .Value $.Form.Role}} checked{{end}}>{{.Label}}</label>{{end}}</div>
+      <p class="field-hint" data-part="role-hint">{{range .Roles}}{{if eq .Value $.Form.Role}}{{.Description}}{{end}}{{end}}</p>
+      <fieldset class="custom-permissions" data-part="custom-permissions">
+        <legend class="visually-hidden">Custom permissions</legend>
+        <div class="choice-row">{{range .PermissionOptions}}<label class="choice"><input type="checkbox" name="permission" value="{{.Value}}"{{if .Checked}} checked{{end}}><code>{{.Value}}</code></label>{{end}}</div>
+        <span class="field-hint">Used only when Access is Custom.</span>
+      </fieldset>
+      <template data-part="role-descriptions">{{range .Roles}}<span data-role="{{.Value}}">{{.Description}}</span>{{end}}</template>
+    </div>
+  </fieldset>
+  <div class="form-section">
+    <div class="form-section__label"><label for="token-namespace">Namespace</label><span>Where the access applies.</span></div>
+    <div class="form-section__body">
+      <select id="token-namespace" name="namespace" required>
+        <option value="*"{{if eq .Form.Namespace "*"}} selected{{end}}>All namespaces</option>
+        {{range .Namespaces}}<option value="{{.}}"{{if eq . $.Form.Namespace}} selected{{end}}>{{.}}</option>{{end}}
+      </select>
+    </div>
+  </div>
+  <fieldset class="form-section">
+    <legend class="form-section__label">Expires<span>Shorter is safer. You can always mint another.</span></legend>
+    <div class="form-section__body">
+      <div class="segmented" role="radiogroup" aria-label="Expires">{{range .ExpiryOptions}}<label class="segmented__option"><input type="radio" name="expiry" value="{{.Value}}" data-part="expiry"{{if eq .Value $.Form.Expiry}} checked{{end}}>{{.Label}}</label>{{end}}</div>
+      <div class="custom-expiry" data-part="custom-expiry">
+        <label for="token-expiry">Hours</label>
+        <input class="input" id="token-expiry" name="expires_in_hours" type="number" min="1" max="{{.MaxExpiryHours}}" step="1" inputmode="numeric" value="{{.Form.ExpiresInHours}}">
+        <span class="field-hint">Used only when Expires is Custom.</span>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-section">
+    <div class="form-section__label"><label for="token-tags">Tags</label><span>Optional labels, like owner or team. Tags never grant access.</span></div>
+    <div class="form-section__body">{{template "tag-editor" dict "ID" "token-tags" "Text" .Form.TagsText}}</div>
+  </div>
+  <div class="form-actions form-actions--end"><a class="button secondary" href="/tokens">Cancel</a><button class="button primary" type="submit">{{icon "key"}} Create token</button></div>
+</form>
+{{end}}

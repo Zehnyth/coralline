@@ -1,0 +1,26 @@
+{{/* home: homePage. The overview: counts and recent activity, scoped to what
+     the viewer can read. It has no publish button — the sidebar's Publish
+     guide is the one entry point. */}}
+{{define "title"}}Overview · Coralline{{end}}
+{{define "styles"}}<link rel="stylesheet" href="{{asset "css/pages/home.css"}}">{{end}}
+{{define "content"}}
+<div class="section-heading">{{template "section-title" dict "Title" (greeting .Viewer)}}</div>
+<section class="stats" aria-label="Registry overview">
+  {{template "stat-tile" dict "Label" "Namespaces" "Value" .NamespaceCount}}
+  {{template "stat-tile" dict "Label" "Modules" "Value" .ModuleCount}}
+  {{template "stat-tile" dict "Label" "Versions" "Value" .VersionCount}}
+  {{template "stat-tile" dict "Label" "Providers" "Value" .ProviderCount}}
+</section>
+<div class="overview-grid">
+  <section class="panel panel--flush" aria-labelledby="recent-title">
+    <div class="panel-bar"><h2 id="recent-title">Recently published</h2>{{if .Recent}}<a class="text-link" href="/modules">All modules</a>{{end}}</div>
+    {{if .Recent}}<ul class="module-list module-list--flush" role="list">{{range .Recent}}{{template "module-row" dict "Module" . "ShowNamespace" true}}{{end}}</ul>
+    {{else}}<p class="overview-empty">Nothing is published yet. Open the Publish guide in the sidebar to create a namespace and publish your first module.</p>{{end}}
+  </section>
+  <section class="panel" aria-labelledby="connect-title">
+    <h2 id="connect-title">Connect Terraform</h2>
+    <p class="overview-hint">Sign in once with a read token, then use modules from this registry.</p>
+    <div class="command"><code id="login-command">terraform login {{.Host}}</code>{{template "copy-button" dict "Target" "login-command" "Label" "" "Message" "Command copied to clipboard" "Inline" true "Aria" "Copy command"}}</div>
+  </section>
+</div>
+{{end}}

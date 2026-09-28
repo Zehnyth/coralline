@@ -1,0 +1,3 @@
+{{/* code-block: dict Title, ID (id of the <code>), Code, CopyLabel,
+     CopyMessage (toast text after copying). */}}
+{{define "code-block"}}<div class="code-block"><div class="code-title"><span><span class="code-dot" aria-hidden="true"></span>{{.Title}}</span>{{template "copy-button" dict "Target" .ID "Label" .CopyLabel "Message" .CopyMessage "Inline" true}}</div><pre><code id="{{.ID}}">{{.Code}}</code></pre></div>{{end}}

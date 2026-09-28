@@ -1,0 +1,75 @@
+/* module.css — the module detail page: the usage block with its version
+   selector, and the details rail. */
+.page-heading .provider-tag {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: start;
+  gap: 20px;
+}
+.detail-grid > * {
+  min-width: 0;
+}
+.usage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.usage-head h2 {
+  font-size: 14px;
+}
+.version-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.version-form select {
+  min-height: 30px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.usage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 12px;
+}
+.usage-note {
+  font-size: 13px;
+}
+.usage-note code {
+  color: var(--text-2);
+  font-size: 12px;
+}
+.detail-note {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.detail-note .icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+}
+
+@media (max-width: 960px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
