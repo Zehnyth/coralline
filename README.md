@@ -3,6 +3,9 @@
 This is a first-pass implementation of Coralline's core: the Terraform/OpenTofu
 module registry protocol and the two-phase publish protocol, per the v1 PRD.
 
+**New here?** The step-by-step guides in [docs/](docs/README.md) cover running Coralline
+locally, connecting OpenTofu/Terraform, and publishing modules.
+
 ## Required first step
 
 This project was written and compile-verified in a sandboxed environment whose
