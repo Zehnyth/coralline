@@ -88,6 +88,9 @@ Tokens are the only credential — there are no user accounts, passwords, or ext
 - Tokens carry a name, server-set `created_by`/`last_used_at`, and free-form admin-asserted tags (`owner`, `email`, …). Tags never participate in authorization, are never loaded on the auth path, and are only rendered to admins.
 - Admin tokens are minted only on the loopback API (`coralline admin create/rotate`); the web UI mints standard tokens only and treats admin tokens as read-only. Revoking the last active admin token is refused.
 - Browser sessions are in-memory, created by pasting a token at `/login`; every request re-checks the token, so revocation ends sessions immediately.
+- Module archives: Terraform/OpenTofu send host credentials on registry API calls but fetch the `X-Terraform-Get` location through go-getter, which never does. So the (authenticated) `download` endpoint returns an `/archive` URL signed with a per-process HMAC key and valid for 5 minutes (`transport/terraform/archiveurl.go`); `/archive` accepts that signature or a bearer token. A revoked token's already-issued URLs keep working until they expire.
+- Every rejected authentication logs `auth rejected` with a `reason` (`missing_bearer`, `malformed_token`, `unknown_token`, `bad_secret`, `inactive_token`) and the public token id, so for any 401, check the server log first. A token-store failure is a logged 500, never a 401.
+- Local dev hostname: Terraform/OpenTofu reject registry hosts without a dot, so the self-signed cert also covers `coralline.localhost`; map it to loopback in the hosts file and use `coralline.localhost:8443/<ns>/<name>/<system>` as the module source.
 
 ## Conventions
 

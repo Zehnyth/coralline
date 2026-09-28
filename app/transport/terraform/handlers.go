@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"coralline/app/auth"
@@ -34,6 +35,10 @@ type Handlers struct {
 	ArchiveReader func(ctx context.Context, namespace, name, system, version string) (io.ReadCloser, error)
 	PublicRead    bool
 	MaxUpload     int64
+	// Signer, when set, makes the archive URL Download returns
+	// self-authorizing for a few minutes (see ArchiveSigner). Without it,
+	// the archive needs a bearer token, which Terraform never sends there.
+	Signer *ArchiveSigner
 }
 
 func copyBuffered(w io.Writer, r io.Reader) (int64, error) {
@@ -108,7 +113,14 @@ func (h *Handlers) Download(w http.ResponseWriter, r *http.Request) {
 	// Relative URL back to our own archive-serving endpoint, with the
 	// explicit ?archive=tar.gz go-getter needs since the path itself
 	// carries no recognizable extension (FR-1.5 / FR-1.6).
-	getURL := fmt.Sprintf("/v1/modules/%s/%s/%s/%s/archive?archive=tar.gz", ns, name, system, version)
+	archivePath := fmt.Sprintf("/v1/modules/%s/%s/%s/%s/archive", ns, name, system, version)
+	query := url.Values{"archive": {"tar.gz"}}
+	if h.Signer != nil {
+		for k, v := range h.Signer.Sign(archivePath) {
+			query[k] = v
+		}
+	}
+	getURL := archivePath + "?" + query.Encode()
 
 	if tok := auth.TokenFromContext(r.Context()); h.Attributor != nil {
 		tokenID := ""

@@ -625,3 +625,42 @@ func TestUnknownPathsAnswerNotFound(t *testing.T) {
 		t.Errorf("unknown registry path: status %d, HTML body = %v", resp.StatusCode, strings.Contains(body, "<html"))
 	}
 }
+
+// Terraform and OpenTofu fetch the X-Terraform-Get location through
+// go-getter, which never sends host credentials, so with sign-in required
+// the archive has to be reachable through the signed URL download returns.
+func TestDownloadedArchiveURLWorksWithoutCredentials(t *testing.T) {
+	tr := newTestRegistry(t, true)
+	c := tr.server.Client()
+	const archive = "not-really-a-tarball"
+
+	req, _ := http.NewRequest("PUT", tr.server.URL+"/v1/modules/acme/vpc/aws/2.0.0/publish", strings.NewReader(archive))
+	req.Header.Set("Authorization", "Bearer "+tr.adminToken)
+	if resp, body := tr.do(c, req); resp.StatusCode != http.StatusCreated {
+		t.Fatalf("publish: status %d: %s", resp.StatusCode, body)
+	}
+
+	req, _ = http.NewRequest("GET", tr.server.URL+"/v1/modules/acme/vpc/aws/2.0.0/download", nil)
+	req.Header.Set("Authorization", "Bearer "+tr.userToken)
+	resp, _ := tr.do(c, req)
+	getURL := resp.Header.Get("X-Terraform-Get")
+	if resp.StatusCode != http.StatusNoContent || !strings.Contains(getURL, "sig=") {
+		t.Fatalf("download: status %d, X-Terraform-Get %q", resp.StatusCode, getURL)
+	}
+
+	// Followed exactly as go-getter does: no Authorization header.
+	if resp, body := tr.get(c, getURL); resp.StatusCode != http.StatusOK || body != archive {
+		t.Errorf("signed archive URL without credentials: status %d, body %q", resp.StatusCode, body)
+	}
+
+	// Without the signature, or with a tampered one, credentials are needed.
+	for _, path := range []string{
+		"/v1/modules/acme/vpc/aws/2.0.0/archive?archive=tar.gz",
+		strings.Replace(getURL, "/2.0.0/", "/1.0.0/", 1),
+		strings.Replace(getURL, "sig=", "sig=ff", 1),
+	} {
+		if resp, _ := tr.get(c, path); resp.StatusCode != http.StatusUnauthorized {
+			t.Errorf("GET %s without credentials: status %d, want 401", path, resp.StatusCode)
+		}
+	}
+}

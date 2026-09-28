@@ -45,7 +45,12 @@ type Deps struct {
 func New(d *Deps) (http.Handler, error) {
 	anonymousRead := !d.RequireLogin
 
+	signer, err := terraform.NewArchiveSigner(terraform.DefaultArchiveURLTTL)
+	if err != nil {
+		return nil, err
+	}
 	tfHandlers := &terraform.Handlers{
+		Signer:     signer,
 		Reads:      d.DB,
 		Publisher:  d.Publisher,
 		Verifier:   d.Verifier,
@@ -92,8 +97,11 @@ func New(d *Deps) (http.Handler, error) {
 		d.Verifier.RequireScope(anonymousRead, readCheck, tfHandlers.ListVersions))
 	mux.HandleFunc("GET /v1/modules/{ns}/{name}/{system}/{version}/download",
 		d.Verifier.RequireScope(anonymousRead, readCheck, tfHandlers.Download))
+	// The archive is fetched by go-getter, which never sends host
+	// credentials, so a signed URL from the (authenticated) download call
+	// stands in for the token; a bearer token still works too.
 	mux.HandleFunc("GET /v1/modules/{ns}/{name}/{system}/{version}/archive",
-		d.Verifier.RequireScope(anonymousRead, readCheck, tfHandlers.ServeArchive))
+		tfHandlers.ArchiveGate(d.Verifier.RequireScope(anonymousRead, readCheck, tfHandlers.ServeArchive)))
 	mux.HandleFunc("PUT /v1/modules/{ns}/{name}/{system}/{version}/publish",
 		d.Verifier.RequireScope(false, publishCheck, tfHandlers.Publish)) // publish is never anonymous, regardless of require_login
 
