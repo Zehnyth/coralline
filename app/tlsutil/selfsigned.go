@@ -25,6 +25,10 @@ import (
 	"time"
 )
 
+// devHostname is the dotted loopback name the generated certificate covers,
+// so module sources like coralline.localhost:8443/acme/vpc/aws are valid.
+const devHostname = "coralline.localhost"
+
 // EnsureSelfSigned returns a tls.Certificate, generating and caching a
 // new ECDSA P-256 CA+leaf pair on first boot if certFile/keyFile don't
 // already exist (PRD SR-4.1).
@@ -60,8 +64,13 @@ func EnsureSelfSigned(certFile, keyFile string) (tls.Certificate, error) {
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		IsCA:                  true,
 		BasicConstraintsValid: true,
-		DNSNames:              []string{"localhost"},
-		IPAddresses:           []net.IP{net.ParseIP("127.0.0.1"), net.ParseIP("::1")},
+		// Terraform and OpenTofu reject registry hostnames without a dot, so
+		// "localhost" works in a browser but never in a module source.
+		// "coralline.localhost" is the dotted name to use for local
+		// evaluation (.localhost is reserved for loopback, RFC 6761); map it
+		// to ::1 or 127.0.0.1 in the hosts file.
+		DNSNames:    []string{"localhost", devHostname},
+		IPAddresses: []net.IP{net.ParseIP("127.0.0.1"), net.ParseIP("::1")},
 	}
 
 	der, err := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
