@@ -1,6 +1,6 @@
 // Package ui is the server-rendered browse UI: Go templates plus a small
 // set of native ES-module components, with no SPA and no frontend build
-// step (PRD §6.5).
+// step.
 //
 // Layout (see README.md for the full component contract):
 //

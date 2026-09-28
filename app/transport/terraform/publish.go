@@ -26,8 +26,8 @@ func (h *Handlers) Publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// SR-2.1: bound the request body defensively even though a
-	// server-level limit is also applied in httpserver.
+	// Bound the request body defensively even though a server-level
+	// limit is also applied in httpserver.
 	r.Body = http.MaxBytesReader(w, r.Body, h.MaxUpload)
 
 	sha, size, err := h.Publisher.Publish(r.Context(), ns, name, system, version, tok.ID, r.Body)
@@ -56,8 +56,8 @@ func (h *Handlers) Publish(w http.ResponseWriter, r *http.Request) {
 
 // ServeArchive streams the tarball bytes that the X-Terraform-Get
 // header from Download() points at. Proxied directly from the
-// filesystem BlobStore in this prototype (PRD FR-5.6 — S3 proxy vs.
-// presigned redirect is a later milestone).
+// filesystem BlobStore in this prototype; an S3 backend would instead
+// redirect to a presigned URL rather than proxying the bytes itself.
 func (h *Handlers) ServeArchive(w http.ResponseWriter, r *http.Request) {
 	ns, name, system, version := r.PathValue("ns"), r.PathValue("name"), r.PathValue("system"), r.PathValue("version")
 

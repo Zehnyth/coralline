@@ -28,7 +28,7 @@ func NewFSStore(root string) (*FSStore, error) {
 
 // resolve maps an opaque key to a filesystem path, and enforces that the
 // resulting path stays under root — belt-and-braces against traversal
-// beyond what caller-side key validation (SR-1.1) already checks.
+// beyond what caller-side key validation already checks.
 func (f *FSStore) resolve(key string) (string, error) {
 	cleanKey := filepath.Clean("/" + key) // force leading slash, collapse ..
 	full := filepath.Join(f.root, cleanKey)

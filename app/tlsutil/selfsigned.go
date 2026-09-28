@@ -1,8 +1,8 @@
 // Package tlsutil generates a self-signed certificate on first boot.
 //
-// IMPORTANT (PRD §7.4): terraform's remote service discovery protocol
-// requires HTTPS unconditionally — there is no plain-HTTP path for a
-// real registry hostname. But terraform init has no insecure/skip-verify
+// IMPORTANT: terraform's remote service discovery protocol requires
+// HTTPS unconditionally — there is no plain-HTTP path for a real
+// registry hostname. But terraform init has no insecure/skip-verify
 // flag, so this auto-generated certificate is sufficient for local,
 // single-machine evaluation only. Real deployments need a certificate
 // the client's trust store already accepts, or a reverse proxy
@@ -31,7 +31,7 @@ const devHostname = "coralline.localhost"
 
 // EnsureSelfSigned returns a tls.Certificate, generating and caching a
 // new ECDSA P-256 CA+leaf pair on first boot if certFile/keyFile don't
-// already exist (PRD SR-4.1).
+// already exist.
 func EnsureSelfSigned(certFile, keyFile string) (tls.Certificate, error) {
 	if certFile == "" || keyFile == "" {
 		certFile, keyFile = "./data/tls/dev-cert.pem", "./data/tls/dev-key.pem"

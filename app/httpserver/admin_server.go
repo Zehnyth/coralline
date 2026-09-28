@@ -12,8 +12,8 @@ import (
 // NewAdminServer builds the admin JSON API mux. It is deliberately
 // served on its own listener (bound to loopback in cmd/coralline, per
 // config AdminInternalAddr) rather than mounted on the public mux —
-// namespace creation and admin-token minting are never reachable from the
-// public surface (PRD FR-4.3). It shares the public listener's Verifier, so
+// namespace creation and admin-token minting are never reachable from
+// the public surface. It shares the public listener's Verifier, so
 // admin authentication gets the same argon2id semaphore and rate limiting.
 func NewAdminServer(db *sqlitestore.DB, verifier *auth.Verifier, logger *slog.Logger) http.Handler {
 	h := &admin.Handlers{

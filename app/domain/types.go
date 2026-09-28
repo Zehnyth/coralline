@@ -117,8 +117,9 @@ func (t Token) CanPublish(namespace string) bool {
 }
 
 // DownloadEvent is a single attribution record, written to a buffered
-// channel and flushed in batches — never a synchronous insert per
-// download (see FR-6.12 / FR-9's buffering rationale).
+// channel and flushed in batches rather than inserted synchronously on
+// every download, so recording attribution never adds latency to the
+// download path.
 type DownloadEvent struct {
 	Namespace string
 	Name      string

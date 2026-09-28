@@ -1,6 +1,6 @@
-// Package logging wires up structured JSON logging (PRD FR-10.1) with
-// per-request correlation ids (FR-10.2), header redaction (FR-10.4),
-// and a helper for the always-logged audit events (FR-10.3).
+// Package logging wires up structured JSON logging with per-request
+// correlation ids, header redaction, and a helper for audit events that
+// are always logged regardless of configured level.
 package logging
 
 import (
@@ -48,12 +48,11 @@ func CorrelationID(ctx context.Context) string {
 	return id
 }
 
-// Middleware logs every request with method, path, status, latency and
-// a correlation id (FR-10.2). It never logs bodies (FR-10.5) and
-// redacts the Authorization header at this single point (FR-10.4)
-// rather than leaving redaction to per-handler discipline. Health
-// endpoints are excluded from normal-verbosity logging (FR-9.3) since
-// they fire every few seconds.
+// Middleware logs every request with method, path, status, latency and a
+// correlation id. It never logs bodies, and redacts the Authorization
+// header at this single point rather than leaving redaction to
+// per-handler discipline. Health check endpoints are excluded since they
+// fire every few seconds and would otherwise dominate the log.
 func Middleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -81,9 +80,9 @@ func Middleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	}
 }
 
-// Audit logs a security-relevant event unconditionally, regardless of
-// configured level (FR-10.3) — the partial mitigation for the admin
-// credential's blast radius (PRD FR-4.3 non-goal).
+// Audit logs a security-relevant event unconditionally, regardless of the
+// configured log level, so that security-relevant activity is always
+// recorded even when a deployment has turned verbosity down.
 func Audit(logger *slog.Logger, event string, attrs ...any) {
 	args := append([]any{"audit_event", event}, attrs...)
 	logger.Info("audit", args...)

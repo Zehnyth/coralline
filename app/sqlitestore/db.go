@@ -1,7 +1,7 @@
 // Package sqlitestore is the repository layer: the only place that talks
-// SQL. It is deliberately CQRS-lite (see PRD §6.2) — simple reads are
-// plain queries here with no service-layer indirection above them; only
-// operations that coordinate with blob storage (publish) get a dedicated
+// SQL. It is deliberately CQRS-lite — simple reads are plain queries
+// here with no service-layer indirection above them; only operations
+// that coordinate with blob storage (publish) get a dedicated
 // coordinator, which lives in package modules and calls back into this
 // repository.
 package sqlitestore
@@ -34,10 +34,9 @@ func Open(path string) (*DB, error) {
 	}
 	// modernc.org/sqlite DSN pragmas: WAL mode + a busy timeout so a
 	// concurrent writer doesn't fail fast with SQLITE_BUSY under normal
-	// load (see PRD FR-6.2 / SR-3.3-adjacent write contention notes).
-	// foreign_keys is per-connection in SQLite and off by default; the DSN
-	// pragma applies it to every pooled connection so token_grants and
-	// token_tags really do cascade with their token.
+	// write contention. foreign_keys is per-connection in SQLite and off
+	// by default; the DSN pragma applies it to every pooled connection
+	// so token_grants and token_tags really do cascade with their token.
 	dsn := fmt.Sprintf("file:%s?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=foreign_keys(1)", path)
 	sqlDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
@@ -60,14 +59,14 @@ func (db *DB) Close() error {
 	return db.sql.Close()
 }
 
-// Ping backs the /readyz endpoint (PRD FR-9.2).
+// Ping backs the /readyz endpoint.
 func (db *DB) Ping(ctx context.Context) error {
 	return db.sql.PingContext(ctx)
 }
 
 // migrate applies embedded, append-only migrations tracked via
-// PRAGMA user_version — the only supported upgrade path (PRD FR-6.11).
-// Deleting the database is never a valid update procedure.
+// PRAGMA user_version — the only supported upgrade path. Deleting the
+// database is never a valid update procedure.
 func (db *DB) migrate(ctx context.Context) error {
 	var current int
 	if err := db.sql.QueryRowContext(ctx, "PRAGMA user_version").Scan(&current); err != nil {
@@ -110,8 +109,7 @@ func (db *DB) migrate(ctx context.Context) error {
 }
 
 // startCheckpointLoop runs a periodic passive WAL checkpoint so a
-// long-held read transaction cannot grow the WAL file without bound
-// (PRD FR-6.2).
+// long-held read transaction cannot grow the WAL file without bound.
 func (db *DB) startCheckpointLoop(ctx context.Context) error {
 	if _, err := db.sql.ExecContext(ctx, "PRAGMA wal_autocheckpoint = 1000"); err != nil {
 		return err

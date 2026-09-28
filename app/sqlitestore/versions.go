@@ -9,11 +9,11 @@ import (
 	"coralline/app/domain"
 )
 
-// ReserveVersion is phase 1 of the two-phase publish protocol (PRD
-// FR-2.4). The UNIQUE constraint on (namespace, name, system, version)
-// gives atomic conflict detection here, before any blob is touched —
-// this is what closes the concurrent-publish race that an earlier,
-// blob-first design was vulnerable to.
+// ReserveVersion is phase 1 of the two-phase publish protocol. The
+// UNIQUE constraint on (namespace, name, system, version) gives atomic
+// conflict detection here, before any blob is touched — this is what
+// closes the concurrent-publish race that an earlier, blob-first design
+// was vulnerable to.
 //
 // A row left "failed" by an earlier attempt is reclaimed in the same
 // statement, so an interrupted upload never blocks its version forever;
@@ -69,7 +69,7 @@ func (db *DB) ActivateVersion(ctx context.Context, namespace, name, system, vers
 }
 
 // FailVersion marks a reservation as failed so the reaper can clean up
-// its staging blob (PRD FR-2.8).
+// its staging blob.
 func (db *DB) FailVersion(ctx context.Context, namespace, name, system, version string) error {
 	_, err := db.sql.ExecContext(ctx,
 		`UPDATE versions SET status = ? WHERE namespace = ? AND name = ? AND system = ? AND version = ? AND status = ?`,
@@ -100,8 +100,7 @@ func (db *DB) TimedOutReservations(ctx context.Context, olderThan time.Time) ([]
 }
 
 // ListActiveVersions is a direct read with no service-layer indirection
-// (CQRS-lite, PRD §6.2) — it's what backs the Terraform protocol's
-// /versions endpoint.
+// — it's what backs the Terraform protocol's /versions endpoint.
 func (db *DB) ListActiveVersions(ctx context.Context, namespace, name, system string) ([]string, error) {
 	rows, err := db.sql.QueryContext(ctx,
 		`SELECT version FROM versions WHERE namespace = ? AND name = ? AND system = ? AND status = ? ORDER BY version`,

@@ -1,10 +1,9 @@
 // Package admin implements the admin JSON API: namespace and token
-// management. Per PRD FR-5.8, mutating CLI subcommands call this API
-// over loopback rather than opening the SQLite file directly, since
-// SQLite allows only one writer and a second process opening the same
-// file produces SQLITE_BUSY races. This also means the CLI has no
-// privileged access beyond what any external script calling the same
-// API would have.
+// management. Mutating CLI subcommands call this API over loopback
+// rather than opening the SQLite file directly, since SQLite allows only
+// one writer and a second process opening the same file produces
+// SQLITE_BUSY races. This also means the CLI has no privileged access
+// beyond what any external script calling the same API would have.
 package admin
 
 import (

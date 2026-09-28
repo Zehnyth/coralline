@@ -57,6 +57,8 @@ func compareVersions(a, b string) int {
 	if ap == bp {
 		return 0
 	}
+	// Per semver precedence rules, a version with a pre-release suffix
+	// always sorts before the same version without one.
 	if ap == "" {
 		return 1
 	}
@@ -74,6 +76,10 @@ func compareVersions(a, b string) int {
 		}
 		return true
 	}
+	// Compare pre-release identifiers dot-separated field by field: numeric
+	// fields compare numerically, alphanumeric fields compare lexically, and
+	// a numeric field always sorts below an alphanumeric one at the same
+	// position.
 	ax, bx = strings.Split(ap, "."), strings.Split(bp, ".")
 	for i := 0; i < len(ax) && i < len(bx); i++ {
 		xn, yn := isNumeric(ax[i]), isNumeric(bx[i])
@@ -89,6 +95,8 @@ func compareVersions(a, b string) int {
 			return c
 		}
 	}
+	// A shorter set of pre-release fields sorts lower when every shared
+	// field compared equal.
 	if len(ax) < len(bx) {
 		return -1
 	}

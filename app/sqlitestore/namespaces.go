@@ -10,9 +10,9 @@ import (
 )
 
 // CreateNamespace is the one namespace operation with any side effect
-// worth naming (it's a plain insert, but explicit creation matters: PRD
-// FR-3.1 — namespaces are never auto-created, precisely to prevent a
-// typo'd namespace from silently succeeding on publish).
+// worth naming (it's a plain insert, but explicit creation matters:
+// namespaces are never auto-created, precisely to prevent a typo'd
+// namespace from silently succeeding on publish).
 func (db *DB) CreateNamespace(ctx context.Context, name string) error {
 	_, err := db.sql.ExecContext(ctx,
 		`INSERT INTO namespaces (name, created_at) VALUES (?, ?)`,

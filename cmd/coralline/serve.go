@@ -54,7 +54,7 @@ func runServe(ctx context.Context, args []string) error {
 	}
 	defer db.Close()
 
-	// --- Admin token bootstrap (PRD FR-4.1): minted whenever no admin token is active ---
+	// --- Admin token bootstrap: minted whenever no admin token is active ---
 	plaintext, err := auth.EnsureAdminToken(ctx, db)
 	if err != nil {
 		return fmt.Errorf("bootstrapping admin token: %w", err)
@@ -82,7 +82,7 @@ func runServe(ctx context.Context, args []string) error {
 	}
 	verifier := &auth.Verifier{
 		Store:          db,
-		Semaphore:      auth.NewArgonSemaphore(4), // PRD SR-3.3
+		Semaphore:      auth.NewArgonSemaphore(4), // bounds concurrent argon2id verifications
 		Limiter:        auth.NewIPRateLimiter(20, time.Minute, 10_000),
 		TrustedProxies: trustedProxies,
 		LastUsed:       lastUsed,
@@ -107,7 +107,7 @@ func runServe(ctx context.Context, args []string) error {
 		return fmt.Errorf("building server: %w", err)
 	}
 
-	// --- Admin API: loopback only, separate listener (PRD FR-4.3) ---
+	// --- Admin API: loopback only, separate listener ---
 	adminHandler := httpserver.NewAdminServer(db, verifier, logger)
 	adminLis, err := net.Listen("tcp", cfg.AdminInternalAddr)
 	if err != nil {
@@ -128,7 +128,7 @@ func runServe(ctx context.Context, args []string) error {
 		}
 	}()
 
-	// --- Public listener: TLS by default (PRD SR-4.1), local-evaluation caveat documented in tlsutil ---
+	// --- Public listener: TLS by default, local-evaluation caveat documented in tlsutil ---
 	lis, err := net.Listen("tcp", cfg.Listen)
 	if err != nil {
 		return fmt.Errorf("binding listener: %w", err)

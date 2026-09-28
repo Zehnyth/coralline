@@ -90,8 +90,8 @@ func MintToken(ctx context.Context, store TokenStore, req MintRequest) (*domain.
 
 // ValidateGrants normalizes grants for a token of the given kind. Admin
 // tokens take no grants; standard tokens need at least one, and every named
-// namespace must exist — the same rule that stops a typo'd namespace from
-// silently succeeding on publish (PRD FR-3.1) stops a typo'd grant here.
+// namespace must exist, so a typo'd namespace fails loudly at mint time
+// instead of silently granting access to nothing.
 func ValidateGrants(ctx context.Context, namespaces NamespaceChecker, kind domain.TokenKind, in []domain.GrantInput) ([]domain.Grant, error) {
 	if kind == domain.TokenKindAdmin {
 		if len(in) > 0 {

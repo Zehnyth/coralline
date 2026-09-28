@@ -1,8 +1,7 @@
 // Package httpserver wires transport handlers, middleware, and the
-// health/readiness endpoints into a single net/http server (PRD §5.9,
-// §7.4). Routing uses Go 1.22's enhanced ServeMux (method + wildcard
-// path patterns) so no third-party router is needed — one less
-// dependency, consistent with the "no major dependencies" principle.
+// health/readiness endpoints into a single net/http server. Routing uses
+// Go 1.22's enhanced ServeMux (method + wildcard path patterns) so no
+// third-party router is needed.
 package httpserver
 
 import (
@@ -41,7 +40,8 @@ type Deps struct {
 // browse UI, and the admin-only Tokens section. The admin JSON API is a
 // deliberately separate server (see admin_server.go) bound to loopback
 // only — namespace creation and admin-token minting never share this
-// listener (PRD FR-4.3 blast-radius note).
+// listener, which limits the blast radius if the public listener is
+// ever exposed more broadly than intended.
 func New(d *Deps) (http.Handler, error) {
 	anonymousRead := !d.RequireLogin
 
@@ -143,13 +143,13 @@ func New(d *Deps) (http.Handler, error) {
 		gate.page(webHandlers.NotFound)(w, r)
 	})
 
-	// Liveness: process is up, no dependency checks (FR-9.1).
+	// Liveness: process is up, no dependency checks.
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
-	// Readiness: SQLite must be openable (FR-9.2).
+	// Readiness: SQLite must be openable.
 	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if err := d.DB.Ping(r.Context()); err != nil {

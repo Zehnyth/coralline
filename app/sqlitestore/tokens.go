@@ -12,7 +12,7 @@ import (
 
 // CreateToken persists a new token record with its grants and tags in a
 // single transaction. Only the argon2id hash is stored — the plaintext
-// secret is never persisted (PRD FR-4.8). Validation happens upstream in
+// secret is never persisted. Validation happens upstream in
 // auth.MintToken; this layer only enforces what the schema does.
 func (db *DB) CreateToken(ctx context.Context, t domain.Token) error {
 	tx, err := db.sql.BeginTx(ctx, nil)
@@ -48,9 +48,9 @@ func (db *DB) CreateToken(ctx context.Context, t domain.Token) error {
 
 // GetToken looks up a token by its public id. Note: this is a cheap,
 // indexed lookup performed *before* the caller runs argon2id verification
-// against the returned SecretHash — see PRD FR-4.9 on why we do not run
-// a dummy hash when the id is unknown (returning early here is correct,
-// not a shortcut).
+// against the returned SecretHash. The caller deliberately does not run a
+// dummy hash when the id is unknown (returning early here is correct,
+// not a shortcut) — see auth.AuthenticateToken.
 //
 // This is the authentication path, so it loads only what authorization
 // needs: kind and grants. Tags are deliberately not loaded here.

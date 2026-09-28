@@ -16,9 +16,9 @@ type AdminBootstrapStore interface {
 const BootstrapAdminName = "bootstrap-admin"
 
 // EnsureAdminToken mints an admin token whenever the server starts with no
-// active one (PRD FR-4.1). That single rule covers first boot, the upgrade
-// from the legacy standalone admin credential, and lockout recovery: an
-// operator with host access restarts the server to get a fresh admin token.
+// active one. That single rule covers first boot, the upgrade from the
+// legacy standalone admin credential, and lockout recovery: an operator
+// with host access restarts the server to get a fresh admin token.
 //
 // The admin credential is an ordinary token of kind admin, so it goes
 // through the same id lookup, argon2id semaphore, rate limiting, expiry,

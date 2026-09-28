@@ -84,8 +84,8 @@ func (v *Verifier) logRejected(r *http.Request, reason, tokenID string) {
 
 // AuthenticateToken verifies a presented token string — from a bearer
 // header, or pasted into the web UI's sign-in form — through the exact same
-// checks. It never runs a dummy argon2id hash for an unknown token id (PRD
-// FR-4.9) — the timing asymmetry is accepted given 128-bit id entropy, and
+// checks. It never runs a dummy argon2id hash for an unknown token id: the
+// resulting timing asymmetry is accepted given 128-bit id entropy, since
 // equalizing it would hand attackers a free CPU-exhaustion vector.
 func (v *Verifier) AuthenticateToken(r *http.Request, presented string) (*domain.Token, error) {
 	id, secret, ok := ParseToken(strings.TrimSpace(presented))
@@ -143,7 +143,7 @@ func (v *Verifier) AuthenticateToken(r *http.Request, presented string) (*domain
 // checking the given scope check function (which receives the request
 // so it can inspect path values like the namespace). anonymousOK, when
 // true, bypasses authentication entirely — set only when the operator has
-// turned require_login off (PRD FR-1.7).
+// turned require_login off.
 func (v *Verifier) RequireScope(anonymousOK bool, check func(r *http.Request, t *domain.Token) bool, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if anonymousOK {

@@ -9,11 +9,11 @@ import (
 )
 
 // ArgonSemaphore caps the number of concurrent argon2id verifications
-// process-wide (PRD SR-3.3). Argon2id is deliberately expensive, so a
-// handful of concurrent bogus-secret requests can otherwise starve
-// legitimate terraform init traffic — a resource-exhaustion attack that
-// needs no brute-force volume at all. Callers that fail to acquire
-// should respond 429 before ever calling VerifySecret.
+// process-wide. Argon2id is deliberately expensive, so a handful of
+// concurrent bogus-secret requests can otherwise starve legitimate
+// terraform init traffic — a resource-exhaustion attack that needs no
+// brute-force volume at all. Callers that fail to acquire should respond
+// 429 before ever calling VerifySecret.
 type ArgonSemaphore struct {
 	slots chan struct{}
 }
@@ -57,11 +57,10 @@ func (s *ArgonSemaphore) Release() {
 
 // IPRateLimiter throttles failed authentication attempts per source
 // address, backed by a bounded map so rotating through spoofed or
-// botnet addresses cannot exhaust server memory (PRD SR-3.4). This is a
-// simple fixed-window counter — adequate for a single-binary tool; it
-// is not a substitute for a distributed limiter at very large scale,
-// which is deliberately out of scope (no Redis dependency, PRD
-// principle: no major dependencies).
+// botnet addresses cannot exhaust server memory. This is a simple
+// fixed-window counter — adequate for a single-binary tool; it is not a
+// substitute for a distributed limiter at very large scale, which is
+// deliberately out of scope to avoid a dependency like Redis.
 type IPRateLimiter struct {
 	mu         sync.Mutex
 	counts     map[string]*window
@@ -132,10 +131,10 @@ func (l *IPRateLimiter) evictOldest() {
 
 // ClientIP resolves the source address for rate-limiting purposes.
 // X-Forwarded-For is honoured ONLY when the direct peer is in
-// trustedProxies (PRD SR-3.5) — trusting it unconditionally makes
-// per-source limiting trivially spoofable, while ignoring it behind a
-// real reverse proxy bans the proxy for every user at once. Both are
-// self-inflicted denial of service.
+// trustedProxies — trusting it unconditionally makes per-source limiting
+// trivially spoofable, while ignoring it behind a real reverse proxy
+// bans the proxy for every user at once. Both are self-inflicted denial
+// of service.
 func ClientIP(r *http.Request, trustedProxies map[string]bool) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {

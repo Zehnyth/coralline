@@ -9,11 +9,11 @@ import (
 )
 
 // DownloadAttributor buffers download events and flushes them in
-// batches from a single background worker (PRD FR-6.12 / FR-9's
-// rationale): terraform init fans out bursts of parallel downloads,
-// and a synchronous insert per download would contend SQLite's single
-// writer. Events are dropped under catastrophic overload rather than
-// failing the actual download — an accepted, documented trade.
+// batches from a single background worker: terraform init fans out
+// bursts of parallel downloads, and a synchronous insert per download
+// would contend SQLite's single writer. Events are dropped under
+// catastrophic overload rather than failing the actual download — an
+// accepted, documented trade.
 type DownloadAttributor struct {
 	db     *DB
 	events chan domain.DownloadEvent

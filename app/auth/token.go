@@ -1,6 +1,6 @@
 // Package auth implements the token format, admin credential bootstrap,
 // argon2id hashing, and the rate-limiting / concurrency-limiting guards
-// around authentication (PRD §5.4, §7.3).
+// around authentication.
 package auth
 
 import (
@@ -28,7 +28,7 @@ const (
 var b32 = base32.StdEncoding.WithPadding(base32.NoPadding)
 
 // GeneratedToken is returned once, at creation time. Only SecretHash is
-// ever persisted (PRD FR-4.8).
+// ever persisted.
 type GeneratedToken struct {
 	ID         string // public, 128-bit random, safe to log
 	Plaintext  string // full token string — shown once, never stored
@@ -39,7 +39,7 @@ type GeneratedToken struct {
 // The id is looked up first (cheap, indexed); the secret is then
 // argon2id-verified against the stored hash. The trailing CRC lets a
 // truncated or mis-pasted token be rejected before any DB or hashing
-// work at all (PRD FR-4.4 / SR-3.6).
+// work at all.
 func NewToken() (*GeneratedToken, error) {
 	id, err := randomID(16) // 128 bits
 	if err != nil {
@@ -96,7 +96,7 @@ func ParseToken(presented string) (id, secret string, ok bool) {
 // VerifySecret runs argon2id verification. Callers MUST gate this
 // behind the concurrency semaphore in ratelimit.go — argon2id is
 // deliberately expensive, and unbounded concurrent verification is a
-// resource-exhaustion vector (PRD SR-3.3).
+// resource-exhaustion vector.
 func VerifySecret(secret, storedHash string) bool {
 	salt, wantKey, ok := decodeHash(storedHash)
 	if !ok {

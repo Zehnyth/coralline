@@ -1,6 +1,5 @@
-// Package config loads Coralline's configuration. Every field is optional;
-// omitting the file entirely yields a working registry (PRD principle:
-// operational simplicity is the feature).
+// Package config loads Coralline's configuration. Every field is
+// optional; omitting the file entirely yields a working registry.
 package config
 
 import (
@@ -41,13 +40,13 @@ type Config struct {
 	TLS struct {
 		CertFile string `yaml:"cert_file"`
 		KeyFile  string `yaml:"key_file"`
-		Disabled bool   `yaml:"disabled"` // local evaluation only — see PRD SR-4.3
+		Disabled bool   `yaml:"disabled"` // local evaluation only — see tlsutil package doc
 	} `yaml:"tls"`
 
-	// AdminInternalAddr is where the admin JSON API listens for loopback-only
-	// CLI calls (see PRD FR-5.8 — CLI mutating commands go through this API
-	// rather than opening the SQLite file directly, to avoid inter-process
-	// SQLITE_BUSY contention).
+	// AdminInternalAddr is where the admin JSON API listens for
+	// loopback-only CLI calls. CLI mutating commands go through this API
+	// rather than opening the SQLite file directly, to avoid
+	// inter-process SQLITE_BUSY contention.
 	AdminInternalAddr string `yaml:"admin_internal_addr"`
 }
 

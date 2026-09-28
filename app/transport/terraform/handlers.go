@@ -1,8 +1,8 @@
 // Package terraform implements the Terraform/OpenTofu module registry
-// protocol, verified against HashiCorp's published reference (PRD §5.1,
-// FR-1.1–FR-1.9). This is a thin transport adapter: it parses the
-// registry-protocol request shape and calls straight into the read
-// repository or the publish coordinator — no business logic lives here.
+// protocol, verified against HashiCorp's published reference. This is a
+// thin transport adapter: it parses the registry-protocol request shape
+// and calls straight into the read repository or the publish
+// coordinator — no business logic lives here.
 package terraform
 
 import (
@@ -45,9 +45,9 @@ func copyBuffered(w io.Writer, r io.Reader) (int64, error) {
 	return io.Copy(w, r)
 }
 
-// Discovery serves /.well-known/terraform.json (FR-1.1). Note this
-// endpoint itself is expected to be reachable only over HTTPS per the
-// remote service discovery protocol — see tlsutil package doc comment.
+// Discovery serves /.well-known/terraform.json. Note this endpoint
+// itself is expected to be reachable only over HTTPS per the remote
+// service discovery protocol — see tlsutil package doc comment.
 func (h *Handlers) Discovery(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]string{
@@ -55,9 +55,9 @@ func (h *Handlers) Discovery(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// versionsResponse matches the spec's required shape exactly (FR-1.2):
-// a single-element "modules" array with the requested module first,
-// even though Terraform itself only reads element zero.
+// versionsResponse matches the spec's required shape exactly: a
+// single-element "modules" array with the requested module first, even
+// though Terraform itself only reads element zero.
 type versionsResponse struct {
 	Modules []moduleVersions `json:"modules"`
 }
@@ -69,7 +69,7 @@ type versionEntry struct {
 }
 
 // ListVersions implements GET /v1/modules/:ns/:name/:system/versions.
-// No server-side pre-release filtering (FR-1.3) — every published
+// No server-side pre-release filtering is applied — every published
 // version is returned, and Terraform's own constraint engine decides
 // what a given constraint matches.
 func (h *Handlers) ListVersions(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +81,7 @@ func (h *Handlers) ListVersions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(versions) == 0 {
-		http.NotFound(w, r) // FR-1.9: no versions => no module, per spec
+		http.NotFound(w, r) // per spec: no versions means the module itself is not found
 		return
 	}
 
@@ -96,11 +96,10 @@ func (h *Handlers) ListVersions(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Download implements GET /v1/modules/:ns/:name/:system/:version/download
-// (FR-1.4/FR-1.5). Per spec this returns 204 with X-Terraform-Get, and
-// Content-Type: application/json even though the body is empty — easy
-// to miss, explicitly called out in the PRD after checking the spec
-// directly.
+// Download implements GET /v1/modules/:ns/:name/:system/:version/download.
+// Per spec this returns 204 with X-Terraform-Get, and Content-Type:
+// application/json even though the body is empty — an easy detail to
+// miss when implementing this endpoint from memory rather than the spec.
 func (h *Handlers) Download(w http.ResponseWriter, r *http.Request) {
 	ns, name, system, version := r.PathValue("ns"), r.PathValue("name"), r.PathValue("system"), r.PathValue("version")
 
@@ -112,7 +111,7 @@ func (h *Handlers) Download(w http.ResponseWriter, r *http.Request) {
 
 	// Relative URL back to our own archive-serving endpoint, with the
 	// explicit ?archive=tar.gz go-getter needs since the path itself
-	// carries no recognizable extension (FR-1.5 / FR-1.6).
+	// carries no recognizable extension.
 	archivePath := fmt.Sprintf("/v1/modules/%s/%s/%s/%s/archive", ns, name, system, version)
 	query := url.Values{"archive": {"tar.gz"}}
 	if h.Signer != nil {

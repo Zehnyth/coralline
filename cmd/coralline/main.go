@@ -1,8 +1,8 @@
 // Command coralline is the entrypoint and CLI. Admin subcommands
 // (namespace, token, admin) call the running server's admin API over
-// loopback rather than opening the SQLite file directly — see PRD FR-5.8
-// on why: SQLite allows one writer, and a second process opening the same
-// file races with the running server.
+// loopback rather than opening the SQLite file directly: SQLite allows
+// one writer, and a second process opening the same file races with the
+// running server.
 package main
 
 import (

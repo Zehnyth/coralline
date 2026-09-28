@@ -12,8 +12,8 @@ import (
 )
 
 // RunReaper periodically marks timed-out "uploading" reservations as
-// failed (PRD FR-2.8) and deletes staging blobs older than the same
-// timeout — ones a crashed or abandoned publish never promoted.
+// failed and deletes staging blobs older than the same timeout — ones a
+// crashed or abandoned publish never promoted.
 func RunReaper(ctx context.Context, repo VersionRepo, blobs storage.BlobStore, logger *slog.Logger, interval, timeout time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()

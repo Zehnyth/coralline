@@ -8,9 +8,9 @@ import (
 
 // isUniqueViolation detects a UNIQUE constraint failure specifically —
 // this is what gives the two-phase publish protocol's reservation step
-// (PRD FR-2.4) its atomic conflict detection. We check the driver's
-// typed error code first and fall back to a string match so a driver
-// version bump that changes wrapping doesn't silently break detection.
+// its atomic conflict detection. We check the driver's typed error code
+// first and fall back to a string match so a driver version bump that
+// changes wrapping doesn't silently break detection.
 func isUniqueViolation(err error) bool {
 	if err == nil {
 		return false

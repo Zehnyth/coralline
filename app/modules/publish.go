@@ -1,7 +1,7 @@
 // Package modules holds the coordinators for operations that span both
-// SQLite and blob storage — the CQRS-lite "write" side (PRD §6.2). Pure
-// reads live directly in sqlitestore with no indirection through here;
-// only side-effect-coordinating operations get a dedicated coordinator.
+// SQLite and blob storage — the CQRS-lite "write" side. Pure reads live
+// directly in sqlitestore with no indirection through here; only
+// side-effect-coordinating operations get a dedicated coordinator.
 package modules
 
 import (
@@ -51,7 +51,7 @@ func finalKey(namespace, name, system, version string) string {
 	return fmt.Sprintf("%s/%s/%s/%s.tar.gz", namespace, name, system, version)
 }
 
-// Publish runs the full two-phase protocol (PRD FR-2.4–FR-2.7):
+// Publish runs the full two-phase protocol:
 //
 //  1. Reserve the row in SQLite — the UNIQUE constraint gives atomic
 //     conflict detection before any blob is touched. This is what closes
@@ -96,13 +96,13 @@ func (p *Publisher) Publish(ctx context.Context, namespace, name, system, versio
 	}
 
 	// Phase 2: stage, hashing as we stream — a single read, teed into
-	// the hash and the blob writer simultaneously (PRD FR-2.10).
+	// the hash and the blob writer simultaneously.
 	stage := stagingKey(namespace, name, system, version)
 	hasher := sha256.New()
 	tee := io.TeeReader(body, hasher)
 
 	// Bound the read defensively even though the HTTP layer already
-	// caps the request body (SR-2.1) — belt and braces. Reading one byte
+	// caps the request body — belt and braces. Reading one byte
 	// past the limit is what distinguishes an oversized upload from one
 	// that is exactly the limit; a bare LimitReader would silently
 	// truncate it and publish a corrupt archive.
@@ -142,15 +142,15 @@ func (p *Publisher) Publish(ctx context.Context, namespace, name, system, versio
 // the same directory tree, so re-reading and re-writing under the
 // final key is sufficient here; an S3 backend (a later milestone)
 // would instead issue a conditional PutObject / CopyObject with
-// If-None-Match: * per PRD FR-2.6.
+// If-None-Match: *.
 func (p *Publisher) promote(ctx context.Context, stageKey, finalKey string) error {
 	exists, err := p.Blobs.Exists(ctx, finalKey)
 	if err != nil {
 		return err
 	}
 	if exists {
-		// Immutability (PRD FR-2.9) is enforced by the reservation, not
-		// here: holding the uploading row proves no active version points
+		// Immutability is enforced by the reservation, not here: holding
+		// the uploading row proves no active version points
 		// at this key. A blob already there is an orphan from an earlier
 		// attempt that promoted but failed to activate, so it is replaced.
 		p.Log.Warn("replacing orphaned blob left by a failed publish", "key", finalKey)
