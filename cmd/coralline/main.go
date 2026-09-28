@@ -36,6 +36,8 @@ func main() {
 		err = runToken(ctx, os.Args[2:])
 	case "admin":
 		err = runAdmin(ctx, os.Args[2:])
+	case "publish":
+		err = runPublish(ctx, os.Args[2:])
 	case "version":
 		fmt.Println("coralline " + domain.BuildVersion)
 	case "help", "-h", "--help":
@@ -73,10 +75,16 @@ Usage:
   coralline admin create --name <operator> [--tag key=value...]
   coralline admin rotate
 
+  coralline publish <namespace> <name> <system> <version>
+                     [--dir path] [--registry url] [--token token] [--insecure]
+
   coralline version
 
 Permissions: module:read, module:publish, module:* (per namespace, or * for all).
 Admin commands call the loopback admin API (--admin-addr, default 127.0.0.1:8444)
-with an admin token (--admin-cred, or CORALLINE_ADMIN_CREDENTIAL). Put flags
-before positional arguments.`)
+with an admin token (--admin-cred, or CORALLINE_ADMIN_CREDENTIAL). publish talks
+to the public registry (--registry, default https://localhost:8443, or
+CORALLINE_REGISTRY) with a publish-scoped token (--token, or CORALLINE_TOKEN),
+packaging --dir (default the current directory) into the archive itself. Put
+flags before positional arguments.`)
 }
