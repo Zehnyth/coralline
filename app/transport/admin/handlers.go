@@ -60,8 +60,11 @@ func (h *Handlers) requireAdmin(w http.ResponseWriter, r *http.Request) (*domain
 	case errors.Is(err, domain.ErrRateLimited):
 		http.Error(w, "too many requests", http.StatusTooManyRequests)
 		return nil, false
-	case err != nil:
+	case errors.Is(err, domain.ErrUnauthorized):
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return nil, false
+	case err != nil:
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return nil, false
 	case !tok.IsAdmin():
 		http.Error(w, "forbidden: an admin token is required", http.StatusForbidden)

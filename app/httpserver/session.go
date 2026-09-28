@@ -370,9 +370,14 @@ func (g *uiGate) loginSubmit(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		status := http.StatusUnauthorized
 		msg := "That token isn't valid. Check that you pasted all of it and that it hasn't expired or been revoked."
-		if errors.Is(err, domain.ErrRateLimited) {
+		switch {
+		case errors.Is(err, domain.ErrRateLimited):
 			status = http.StatusTooManyRequests
 			msg = "Too many sign-in attempts. Wait a minute and try again."
+		case !errors.Is(err, domain.ErrUnauthorized):
+			status = http.StatusInternalServerError
+			msg = "Sign-in failed on the server. Try again, or check the server log (correlation id: " +
+				logging.CorrelationID(r.Context()) + ")."
 		}
 		logging.Audit(g.log, "ui_login_failed", "client_ip", auth.ClientIP(r, g.verifier.TrustedProxies))
 		g.ui.RenderLogin(w, r, ui.LoginPage{Next: next, Error: msg}, status)

@@ -86,6 +86,7 @@ func runServe(ctx context.Context, args []string) error {
 		Limiter:        auth.NewIPRateLimiter(20, time.Minute, 10_000),
 		TrustedProxies: trustedProxies,
 		LastUsed:       lastUsed,
+		Logger:         logger,
 	}
 
 	if !cfg.Auth.RequireLogin {

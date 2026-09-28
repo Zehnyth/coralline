@@ -3,11 +3,14 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
 
 	"coralline/app/domain"
+	"coralline/app/logging"
 )
 
 type contextKey string
@@ -39,16 +42,44 @@ type Verifier struct {
 	Limiter        *IPRateLimiter
 	TrustedProxies map[string]bool
 	LastUsed       LastUsedRecorder // optional
+	// Logger, when set, records why each request was rejected. A client
+	// that silently drops its credentials and one presenting a revoked
+	// token both get a bare 401; the log line is what tells them apart.
+	Logger *slog.Logger
 }
+
+// Rejection reasons logged with every failed authentication.
+const (
+	reasonMissingBearer  = "missing_bearer"
+	reasonMalformedToken = "malformed_token"
+	reasonUnknownToken   = "unknown_token"
+	reasonBadSecret      = "bad_secret"
+	reasonInactiveToken  = "inactive_token"
+)
 
 // Authenticate verifies the Authorization: Bearer <token> header.
 func (v *Verifier) Authenticate(r *http.Request) (*domain.Token, error) {
 	authz := r.Header.Get("Authorization")
 	presented := strings.TrimPrefix(authz, "Bearer ")
 	if presented == "" || presented == authz {
+		v.logRejected(r, reasonMissingBearer, "")
 		return nil, domain.ErrUnauthorized
 	}
 	return v.AuthenticateToken(r, presented)
+}
+
+// logRejected records a failed authentication. The token id is public and
+// safe to log; the secret never reaches this function.
+func (v *Verifier) logRejected(r *http.Request, reason, tokenID string) {
+	if v.Logger == nil {
+		return
+	}
+	v.Logger.Warn("auth rejected",
+		"reason", reason,
+		"token_id", tokenID,
+		"method", r.Method,
+		"path", r.URL.Path,
+		"correlation_id", logging.CorrelationID(r.Context()))
 }
 
 // AuthenticateToken verifies a presented token string — from a bearer
@@ -59,6 +90,7 @@ func (v *Verifier) Authenticate(r *http.Request) (*domain.Token, error) {
 func (v *Verifier) AuthenticateToken(r *http.Request, presented string) (*domain.Token, error) {
 	id, secret, ok := ParseToken(strings.TrimSpace(presented))
 	if !ok {
+		v.logRejected(r, reasonMalformedToken, "")
 		return nil, domain.ErrUnauthorized
 	}
 
@@ -67,16 +99,26 @@ func (v *Verifier) AuthenticateToken(r *http.Request, presented string) (*domain
 		return nil, domain.ErrRateLimited
 	}
 	// Only failures count toward the per-IP limit; see IPRateLimiter.Allow.
-	reject := func() (*domain.Token, error) {
+	reject := func(reason string) (*domain.Token, error) {
 		if v.Limiter != nil {
 			v.Limiter.RecordFailure(ip)
 		}
+		v.logRejected(r, reason, id)
 		return nil, domain.ErrUnauthorized
 	}
 
 	tok, err := v.Store.GetToken(r.Context(), id)
+	if errors.Is(err, domain.ErrNotFound) {
+		return reject(reasonUnknownToken) // no dummy hash on unknown id
+	}
 	if err != nil {
-		return reject() // no dummy hash on unknown id
+		// A storage failure says nothing about the token, so it is neither
+		// a 401 nor a strike against the client's IP.
+		if v.Logger != nil {
+			v.Logger.Error("token lookup failed", "token_id", id, "error", err,
+				"correlation_id", logging.CorrelationID(r.Context()))
+		}
+		return nil, fmt.Errorf("token lookup: %w", err)
 	}
 
 	if !v.Semaphore.Acquire(r.Context(), argonQueueWait) {
@@ -85,11 +127,11 @@ func (v *Verifier) AuthenticateToken(r *http.Request, presented string) (*domain
 	defer v.Semaphore.Release()
 
 	if !VerifySecret(secret, tok.SecretHash) {
-		return reject()
+		return reject(reasonBadSecret)
 	}
 	now := time.Now()
 	if !tok.Active(now) {
-		return reject()
+		return reject(reasonInactiveToken)
 	}
 	if v.LastUsed != nil {
 		v.LastUsed.Record(tok.ID, now)
@@ -109,12 +151,16 @@ func (v *Verifier) RequireScope(anonymousOK bool, check func(r *http.Request, t 
 			return
 		}
 		tok, err := v.Authenticate(r)
-		if err != nil {
-			if errors.Is(err, domain.ErrRateLimited) {
-				http.Error(w, "too many requests", http.StatusTooManyRequests)
-				return
-			}
+		switch {
+		case errors.Is(err, domain.ErrRateLimited):
+			http.Error(w, "too many requests", http.StatusTooManyRequests)
+			return
+		case errors.Is(err, domain.ErrUnauthorized):
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		case err != nil:
+			cid := logging.CorrelationID(r.Context())
+			http.Error(w, "internal error (correlation id: "+cid+")", http.StatusInternalServerError)
 			return
 		}
 		if check != nil && !check(r, tok) {
